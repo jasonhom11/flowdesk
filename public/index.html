@@ -908,7 +908,7 @@ function renderGrades(){
     document.getElementById('grades-sub').textContent=behind?behind+' class'+(behind>1?'es':'')+' below goal':'All classes on track ✓';
   }else{avgEl.textContent='—';avgEl.style.color='#fff'}
 
-  list.innerHTML=gradeClasses.map(({g,cur})=>{
+  list.innerHTML=computed.map(({g,cur})=>{
     const expanded=expandedClassId===g.id;
     const pct=cur!==null?cur.toFixed(1)+'%':'—';
     const color=cur!==null?gradeColor(cur):'#555';
