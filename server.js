@@ -8,39 +8,62 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.post('/api/claude', async (req, res) => {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+const GEMINI_MODEL = 'gemini-1.5-flash';
 
-  console.log('[claude] key present:', !!apiKey, apiKey ? '| prefix: ' + apiKey.slice(0, 10) + '...' : '');
+app.post('/api/claude', async (req, res) => {
+  const apiKey = process.env.GEMINI_API_KEY;
+
+  console.log('[gemini] key present:', !!apiKey, apiKey ? '| prefix: ' + apiKey.slice(0, 8) + '...' : '| KEY MISSING');
 
   if (!apiKey) {
-    return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured' });
+    return res.status(500).json({ error: 'GEMINI_API_KEY not configured' });
+  }
+
+  // Translate Anthropic-format request → Gemini format
+  const { system, messages, max_tokens } = req.body;
+  const userText = messages?.[0]?.content || '';
+
+  const geminiBody = {
+    contents: [{ role: 'user', parts: [{ text: userText }] }],
+    generationConfig: {
+      maxOutputTokens: max_tokens || 1200,
+      temperature: 0.7
+    }
+  };
+
+  if (system) {
+    geminiBody.systemInstruction = { parts: [{ text: system }] };
   }
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+
+    const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify(req.body)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(geminiBody)
     });
 
     const data = await response.json();
-    console.log('[claude] status:', response.status, '| type:', data.type);
+    console.log('[gemini] status:', response.status, '| finish:', data.candidates?.[0]?.finishReason);
 
     if (!response.ok) {
-      // Anthropic errors: { type:"error", error:{ type:"...", message:"..." } }
-      const msg = data?.error?.message || data?.error?.type || JSON.stringify(data);
-      console.error('[claude] Anthropic error:', msg);
+      const msg = data?.error?.message || data?.error?.status || JSON.stringify(data);
+      console.error('[gemini] API error:', msg);
       return res.status(response.status).json({ error: msg });
     }
 
-    res.json(data);
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) {
+      console.error('[gemini] empty response:', JSON.stringify(data));
+      return res.status(500).json({ error: 'Empty response from Gemini' });
+    }
+
+    // Return Anthropic-shaped response so the client needs zero changes
+    res.json({ content: [{ type: 'text', text }] });
+
   } catch (err) {
-    console.error('[claude] fetch error:', err);
+    console.error('[gemini] fetch error:', err);
     res.status(500).json({ error: err.message || String(err) });
   }
 });
