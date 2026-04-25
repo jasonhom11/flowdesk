@@ -691,7 +691,8 @@ document.getElementById('task-input').addEventListener('keydown',e=>{if(e.key===
 function toggleDone(id){
   const t=tasks.find(t=>t.id===id);if(!t)return;
   t.done=!t.done;renderTasks();
-  if(t.done){toast('Done ✓');if(navigator.vibrate)navigator.vibrate(40);recordActivity();recordWeeklyTask();}
+  if(t.done){toast('Done ✓');if(navigator.vibrate)navigator.vibrate(40);recordActivity();recordWeeklyTask(1);}
+  else recordWeeklyTask(-1);
   saveState();
 }
 function deleteTask(id){tasks=tasks.filter(t=>t.id!==id);renderTasks();saveState()}
@@ -730,7 +731,8 @@ async function callClaude(system,user,maxTokens=1200){
   const res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:maxTokens,system,messages:[{role:'user',content:user}]})});
   const data=await res.json();
-  if(data.error)throw new Error(data.error);
+  if(data.error)throw new Error(typeof data.error==='string'?data.error:data.error.message||data.error.type||JSON.stringify(data.error));
+  if(!data.content)throw new Error('No response from AI — check API key');
   const raw=data.content.find(b=>b.type==='text').text||'{}';
   return JSON.parse(raw.replace(/```json|```/g,'').trim());
 }
@@ -1343,9 +1345,9 @@ function initWeeklyData(){
     weeklyData={weekStart:ws,tasksCompleted:0,focusMinutes:0,dailyActivity:{},gradeSnapshot:snap};
   }
 }
-function recordWeeklyTask(){
-  initWeeklyData();weeklyData.tasksCompleted++;
-  const today=todayStr();weeklyData.dailyActivity[today]=(weeklyData.dailyActivity[today]||0)+1;
+function recordWeeklyTask(delta){
+  initWeeklyData();weeklyData.tasksCompleted=Math.max(0,(weeklyData.tasksCompleted||0)+delta);
+  if(delta>0){const today=todayStr();weeklyData.dailyActivity[today]=(weeklyData.dailyActivity[today]||0)+1;}
   renderWeeklyCard();
 }
 function recordWeeklyFocus(mins){
@@ -1443,10 +1445,16 @@ function setLayout(mode) {
 
 function toggleLayout() {
   const isMac = document.getElementById('app').dataset.layout === 'mac';
+  localStorage.setItem('fd-layout-manual', '1');
   setLayout(isMac ? 'phone' : 'mac');
 }
 
-setLayout(localStorage.getItem('fd-layout') || 'phone');
+setLayout(localStorage.getItem('fd-layout') || (window.innerWidth >= 768 ? 'mac' : 'phone'));
+window.addEventListener('resize', () => {
+  if (!localStorage.getItem('fd-layout-manual')) {
+    setLayout(window.innerWidth >= 768 ? 'mac' : 'phone');
+  }
+});
 </script>
 </body>
 </html>
