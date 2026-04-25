@@ -21,7 +21,7 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{height:100%}
 body{font-family:var(--font);background:var(--bg);min-height:100dvh;overscroll-behavior:none}
-#app{max-width:480px;margin:0 auto;min-height:100dvh;background:var(--surface);display:flex;flex-direction:column}
+#app{max-width:480px;margin:0 auto;min-height:100dvh;background:var(--surface);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
 
 /* Nav */
 .tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(10,10,10,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:.5px solid #1c1c1c;display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
@@ -230,6 +230,26 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 .toast.show{opacity:1;transform:translateY(0) scale(1)}
 
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+
+/* Score calculator */
+.score-calc{background:#0d0d0d;border:.5px solid var(--border);border-radius:8px;padding:12px 13px;margin-top:10px}
+.score-calc-title{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;font-weight:500}
+.score-calc-row{display:flex;gap:8px;margin-bottom:10px}
+.score-calc-row select{flex:1;background:var(--card);border:.5px solid var(--border);border-radius:8px;padding:9px 10px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;-webkit-appearance:none;appearance:none}
+.score-result{font-size:13px;line-height:1.6;color:#aaa;min-height:20px}
+.score-result strong{font-size:18px;font-weight:700;display:block;margin-bottom:2px}
+
+/* Prep sheet */
+.prep-q{background:var(--card);border:.5px solid var(--border);border-radius:var(--radius-md);margin-bottom:8px;overflow:hidden}
+.prep-q-header{padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:10px}
+.prep-q-header:active{background:#1e1e1e}
+.prep-q-num{width:22px;height:22px;border-radius:50%;background:#1e1e1e;font-size:11px;font-weight:600;color:var(--purple);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.prep-q-text{flex:1;font-size:13px;color:#d0d0d0;line-height:1.4}
+.prep-q-body{padding:0 14px 13px;font-size:13px;color:#888;line-height:1.6;border-top:.5px solid #1e1e1e;padding-top:10px;display:none}
+.prep-q-body.open{display:block}
+.prep-topics{margin-top:12px;background:#111020;border:.5px solid #2e2860;border-radius:8px;padding:12px 14px}
+.prep-topics-title{font-size:10px;color:var(--purple);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;font-weight:500}
+.topic-chip{display:inline-block;background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:4px 11px;font-size:12px;color:#aaa;margin:0 4px 4px 0}
 </style>
 </head>
 <body>
@@ -735,7 +755,7 @@ function renderGrades(){
 </div>
 <div style="font-size:10px;color:#555;flex-shrink:0">Goal: ${goalPct}%</div>
 </div>
-${expanded?`<div class="grade-card-body">${entriesHtml}<button class="btn secondary sm" style="width:100%;margin-top:10px" onclick="openAddEntrySheet(${g.id})">+ Add grade</button><button class="btn ghost sm" style="width:100%;margin-top:6px" onclick="deleteClass(${g.id})">Remove class</button></div>`:''}
+${expanded?`<div class="grade-card-body">${entriesHtml}<button class="btn secondary sm" style="width:100%;margin-top:10px" onclick="openAddEntrySheet(${g.id})">+ Add grade</button>${buildScoreCalc(g)}<button class="btn ghost sm" style="width:100%;margin-top:8px" onclick="deleteClass(${g.id})">Remove class</button></div>`:''}
 </div>`;
   }).join('');
 }
@@ -859,6 +879,7 @@ function renderDeadlines(){
 <div class="deadline-meta">${esc(d.className||'')}</div>
 </div>
 <span class="type-pill ${TYPE_CLASSES[d.type]||''}">${d.type}</span>
+${(d.type==='test'||d.type==='quiz')?`<button class="btn secondary sm" style="padding:6px 10px;font-size:11px" onclick="openPrepSheet(${d.id})">Prep</button>`:''}
 <button class="delete-btn" onclick="deleteDeadline(${d.id})">×</button></div>`).join('')+'</div>';
   }).join('');
   if(done.length){
@@ -906,6 +927,118 @@ function checkDeadlineNotifs(){
   deadlines.filter(d=>!d.done&&(d.due===today||d.due===tomStr)).forEach(d=>{
     new Notification('FlowDesk',{body:d.title+(d.className?' ('+d.className+')':'')+' is '+(d.due===today?'due TODAY':'due tomorrow'),icon:'/icon.svg'});
   });
+}
+
+// ---- Score Calculator ----
+function scoreNeeded(cls, type) {
+  const w = cls.weights || {test:40,quiz:30,project:20,hw:10};
+  const cats = {};
+  (cls.entries||[]).forEach(e => {
+    if (!cats[e.type]) cats[e.type] = [];
+    cats[e.type].push(e.score / e.total * 100);
+  });
+  let curWeighted = 0, curTotalW = 0;
+  for (const [t, scores] of Object.entries(cats)) {
+    if (scores.length && w[t]) {
+      const avg = scores.reduce((s,v) => s+v, 0) / scores.length;
+      curWeighted += avg * w[t]; curTotalW += w[t];
+    }
+  }
+  const catW = w[type] || 0; if (!catW) return null;
+  const entries = cats[type] || [];
+  const N = entries.length;
+  const A = N ? entries.reduce((s,v) => s+v, 0) / N : 0;
+  let needed;
+  if (N > 0) {
+    needed = (cls.goal * curTotalW - curWeighted + A * catW) / catW;
+    needed = needed * (N+1) - A*N;
+  } else {
+    needed = (cls.goal * (curTotalW + catW) - curWeighted) / catW;
+  }
+  return Math.ceil(needed * 10) / 10;
+}
+
+function buildScoreCalc(cls) {
+  const types = ['test','quiz','project','hw'];
+  const labels = {test:'Test',quiz:'Quiz',project:'Project',hw:'Homework'};
+  const options = types.map(t => `<option value="${t}">${labels[t]}</option>`).join('');
+  return `<div class="score-calc">
+<div class="score-calc-title">What score do I need?</div>
+<div class="score-calc-row">
+<select id="calc-type-${cls.id}" onchange="updateScoreCalc(${cls.id})">${options}</select>
+<button class="btn sm" onclick="updateScoreCalc(${cls.id})">Calculate</button>
+</div>
+<div class="score-result" id="calc-result-${cls.id}">Select a category above</div>
+</div>`;
+}
+
+function updateScoreCalc(classId) {
+  const cls = gradeClasses.find(g => g.id === classId); if (!cls) return;
+  const type = document.getElementById('calc-type-'+classId).value;
+  const el = document.getElementById('calc-result-'+classId);
+  const cur = computeClassGrade(cls);
+  if (cur !== null && cur >= cls.goal) {
+    el.innerHTML = `<strong style="color:var(--green)">${cur.toFixed(1)}%</strong>You've already met your ${cls.goal}% goal!`;
+    return;
+  }
+  const needed = scoreNeeded(cls, type);
+  if (needed === null) { el.textContent = 'No weight set for this category.'; return; }
+  if (needed > 100) {
+    el.innerHTML = `<strong style="color:var(--red)">Not achievable in one ${type}</strong>You'd need ${needed.toFixed(0)}% — consider multiple high scores or extra credit.`;
+  } else if (needed <= 0) {
+    el.innerHTML = `<strong style="color:var(--green)">Any score works!</strong>You've already covered this category's contribution to your goal.`;
+  } else {
+    const color = needed >= 90 ? 'var(--red)' : needed >= 80 ? 'var(--amber)' : 'var(--green)';
+    el.innerHTML = `<strong style="color:${color}">${needed.toFixed(0)}%</strong>needed on your next ${type} to reach ${cls.goal}% in ${esc(cls.name)}.`;
+  }
+}
+
+// ---- Prep Me ----
+function openPrepSheet(deadlineId) {
+  const d = deadlines.find(x => x.id === deadlineId); if (!d) return;
+  openSheet(`<div class="sheet-title">Prep — ${esc(d.title)}</div>
+<div style="font-size:13px;color:#888;margin-bottom:14px">${esc(d.className||'')} · ${d.type}</div>
+<div class="sh-field"><div class="sh-label">What topics does this cover?</div>
+<textarea id="sh-prep-topics" placeholder="e.g. Chapter 4 equations, slope-intercept form, graphing..." style="height:80px;line-height:1.55"></textarea></div>
+<button class="btn" style="width:100%" onclick="generatePrep(${deadlineId})">Generate practice questions</button>
+<div id="prep-output"></div>`);
+}
+
+async function generatePrep(deadlineId) {
+  const d = deadlines.find(x => x.id === deadlineId); if (!d) return;
+  const topics = document.getElementById('sh-prep-topics').value.trim();
+  const btn = document.querySelector('#sheet-content .btn');
+  btn.textContent = 'Generating...'; btn.disabled = true;
+  document.getElementById('prep-output').innerHTML = '<div style="padding:16px 0;text-align:center"><div class="loading-dots"><span></span><span></span><span></span></div></div>';
+  try {
+    const parsed = await callClaude(
+      'You are a study coach for a high school freshman. Generate 6 practice questions for an upcoming '+d.type+'. Questions should be clear and match the difficulty of a real high school '+d.type+'. For each question provide a concise answer/explanation. Also list 3-4 key topics to review. Return ONLY valid JSON: {"questions":[{"q":"question text","a":"answer/explanation"}],"topics":["topic1","topic2"]}',
+      'Class: '+(d.className||'General')+'\nAssignment: '+d.title+'\nTopics covered: '+(topics||'general '+d.className+' content'),
+      1600
+    );
+    let html = parsed.questions.map((q, i) =>
+      `<div class="prep-q">
+<div class="prep-q-header" onclick="togglePrepQ(${i})">
+<div class="prep-q-num">${i+1}</div>
+<div class="prep-q-text">${esc(q.q)}</div>
+</div>
+<div class="prep-q-body" id="prep-q-${i}">${esc(q.a)}</div>
+</div>`
+    ).join('');
+    if (parsed.topics?.length) {
+      html += `<div class="prep-topics"><div class="prep-topics-title">Key topics to review</div>${parsed.topics.map(t=>'<span class="topic-chip">'+esc(t)+'</span>').join('')}</div>`;
+    }
+    document.getElementById('prep-output').innerHTML = '<div style="padding-top:16px">'+html+'</div>';
+    btn.textContent = 'Regenerate'; btn.disabled = false;
+  } catch(e) {
+    document.getElementById('prep-output').innerHTML = '<div style="color:var(--red);font-size:13px;padding-top:12px">Error: '+esc(e.message)+'</div>';
+    btn.textContent = 'Try again'; btn.disabled = false;
+  }
+}
+
+function togglePrepQ(i) {
+  const el = document.getElementById('prep-q-'+i);
+  if (el) el.classList.toggle('open');
 }
 
 // ---- State ----
