@@ -144,6 +144,28 @@ input[type=text]{flex:1}
 .goal-gap-bar{height:4px;background:#1e1e1e;border-radius:2px;overflow:hidden;margin-top:10px}
 .goal-gap-fill{height:100%;border-radius:2px;transition:width .5s}
 
+/* ---- INLINE GRADE ENTRY ---- */
+.cat-section{padding:10px 0;border-bottom:.5px solid #1c1c1c}
+.cat-section:last-of-type{border-bottom:none;padding-bottom:2px}
+.cat-head{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.cat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.cat-name{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.5px;font-weight:600;flex:1}
+.cat-wt{color:#333;font-weight:400;margin-left:2px}
+.cat-avg{font-size:12px;font-weight:600;flex-shrink:0}
+.entry-line{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12px;color:#999}
+.entry-line-lbl{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.entry-line-pct{font-weight:600;flex-shrink:0;font-size:12px}
+.entry-line-raw{font-size:10px;color:#3a3a3a;flex-shrink:0}
+.add-grade-btn{background:none;border:.5px solid #242424;border-radius:6px;padding:5px 11px;font-size:11px;color:#555;cursor:pointer;font-family:var(--font);transition:all .15s;margin-top:4px;display:inline-flex;align-items:center;gap:3px;-webkit-tap-highlight-color:transparent}
+.add-grade-btn:active{border-color:var(--purple);color:var(--purple);background:#0d0a1a}
+.ig-row{display:flex;align-items:center;gap:7px;margin-top:7px}
+.ig-row input{background:#0d0d0d;border:.5px solid #2a2a2a;border-radius:8px;padding:10px 6px;color:#fff;font-size:16px;font-family:var(--font);outline:none;width:68px;text-align:center;-webkit-appearance:none;transition:border-color .15s}
+.ig-row input:focus{border-color:var(--purple)}
+.ig-of{font-size:12px;color:#3a3a3a;flex-shrink:0}
+.ig-ok{background:var(--green);border:none;border-radius:8px;padding:10px 15px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;font-family:var(--font);-webkit-tap-highlight-color:transparent;transition:background .12s}
+.ig-ok:active{background:#158f68}
+.ig-cancel{background:none;border:.5px solid #242424;border-radius:8px;padding:10px 11px;font-size:14px;color:#444;cursor:pointer;font-family:var(--font);-webkit-tap-highlight-color:transparent}
+
 /* ---- FOCUS ---- */
 .mode-pills{display:flex;gap:8px;justify-content:center;margin-bottom:22px}
 .mode-pill{background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:7px 14px;font-size:12px;color:#666;cursor:pointer;font-family:var(--font);transition:all .12s;font-weight:500}
@@ -245,13 +267,15 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 [data-layout="mac"]{max-width:960px;flex-direction:row;padding-top:0;height:100dvh;overflow:hidden}
 
 [data-layout="mac"] .tab-bar{
-  position:sticky;top:0;left:0;transform:none;
-  width:196px;min-width:196px;
+  order:-1;
+  position:relative;transform:none;
+  width:196px;min-width:196px;flex-shrink:0;
   flex-direction:column;align-items:stretch;
   border-top:none;border-right:.5px solid #1c1c1c;
   padding-top:24px;padding-bottom:env(safe-area-inset-bottom);
-  height:100dvh;align-self:flex-start;
+  height:100%;align-self:stretch;
   background:rgba(10,10,10,.98);
+  overflow-y:auto;
 }
 [data-layout="mac"] .tab{
   flex-direction:row;justify-content:flex-start;
@@ -261,7 +285,7 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 }
 [data-layout="mac"] .tab.active{background:#16132a}
 [data-layout="mac"] .tab svg{flex-shrink:0}
-[data-layout="mac"] .screen-container{flex:1;padding-bottom:0;overflow-y:auto;height:100dvh}
+[data-layout="mac"] .screen-container{flex:1;min-width:0;padding-bottom:0;overflow-y:auto;height:100%}
 [data-layout="mac"] .screen{padding:28px 32px;max-width:720px;animation:none}
 [data-layout="mac"] .screen-header .layout-btn{display:none}
 [data-layout="mac"] .nav-logo{display:block}
@@ -592,6 +616,7 @@ let timerInterval=null, timerRunning=false, timerTotal=25*60, timerLeft=25*60, c
 let newTaskPriority=null;
 let notifEnabled=false;
 let sheetGoal=87, sheetType='test';
+let inlineGradeInput=null;
 let profile=null;
 let activityDates=[];
 let weeklyData=null;
@@ -928,23 +953,20 @@ function renderGrades(){
     if(expanded){
       const types=['test','quiz','project','hw'];
       const typeLabels={test:'Tests',quiz:'Quizzes',project:'Projects',hw:'Homework'};
-      types.forEach(type=>{
+      entriesHtml=types.map(type=>{
         const entries=g.entries.filter(e=>e.type===type);
-        if(!entries.length)return;
-        const avg=entries.reduce((s,e)=>s+e.score/e.total*100,0)/entries.length;
+        const avg=entries.length?entries.reduce((s,e)=>s+e.score/e.total*100,0)/entries.length:null;
         const w=g.weights[type]||0;
-        entriesHtml+=`<div class="grade-type-title">${typeLabels[type]} (${w}% weight · avg ${avg.toFixed(1)}%)</div>`;
-        entries.forEach(e=>{
+        const inputOpen=inlineGradeInput&&inlineGradeInput.classId===g.id&&inlineGradeInput.type===type;
+        const lines=entries.map(e=>{
           const epct=e.score/e.total*100;
-          entriesHtml+=`<div class="grade-entry-row">
-<div class="entry-type-dot" style="background:${TYPE_COLORS[e.type]}"></div>
-<div class="entry-label">${esc(e.label)}</div>
-<div class="entry-score">${e.score}/${e.total}</div>
-<div class="entry-pct" style="color:${gradeColor(epct)}">${epct.toFixed(0)}%</div>
-<button class="entry-del" onclick="deleteEntry(${g.id},${e.id})">×</button></div>`;
-        });
-      });
-      if(!g.entries.length)entriesHtml='<div style="font-size:13px;color:#3a3a3a;padding:12px 0">No grades entered yet</div>';
+          return`<div class="entry-line"><div class="cat-dot" style="background:${TYPE_COLORS[type]}"></div><span class="entry-line-lbl">${esc(e.label)}</span><span class="entry-line-pct" style="color:${gradeColor(epct)}">${epct.toFixed(0)}%</span><span class="entry-line-raw">${e.score}/${e.total}</span><button class="entry-del" onclick="deleteEntry(${g.id},${e.id})">×</button></div>`;
+        }).join('');
+        const addSection=inputOpen
+          ?`<div class="ig-row"><input type="number" id="ig-score-${g.id}-${type}" placeholder="Score" min="0" inputmode="decimal" onkeydown="if(event.key==='Enter')document.getElementById('ig-total-${g.id}-${type}').select()"><span class="ig-of">of</span><input type="number" id="ig-total-${g.id}-${type}" value="100" min="1" inputmode="decimal" onkeydown="if(event.key==='Enter')submitInlineGrade(${g.id},'${type}')"><button class="ig-ok" onclick="submitInlineGrade(${g.id},'${type}')">✓</button><button class="ig-cancel" onclick="cancelInlineGrade()">✗</button></div>`
+          :`<button class="add-grade-btn" onclick="openInlineGrade(${g.id},'${type}')">+ Add</button>`;
+        return`<div class="cat-section"><div class="cat-head"><div class="cat-dot" style="background:${TYPE_COLORS[type]}"></div><span class="cat-name">${typeLabels[type]}<span class="cat-wt">${w}%</span></span><span class="cat-avg" style="color:${avg!==null?gradeColor(avg):'#3a3a3a'}">${avg!==null?avg.toFixed(0)+'%':'—'}</span></div>${lines}${addSection}</div>`;
+      }).join('');
     }
 
     return`<div class="grade-card">
@@ -963,9 +985,30 @@ function renderGrades(){
 </div>
 <div style="font-size:10px;color:#555;flex-shrink:0">Goal: ${goalPct}%</div>
 </div>
-${expanded?`<div class="grade-card-body">${entriesHtml}<button class="btn secondary sm" style="width:100%;margin-top:10px" onclick="openAddEntrySheet(${g.id})">+ Add grade</button>${buildScoreCalc(g)}<button class="btn ghost sm" style="width:100%;margin-top:8px" onclick="deleteClass(${g.id})">Remove class</button></div>`:''}
+${expanded?`<div class="grade-card-body">${entriesHtml}${buildScoreCalc(g)}<button class="btn ghost sm" style="width:100%;margin-top:12px" onclick="deleteClass(${g.id})">Remove class</button></div>`:''}
 </div>`;
   }).join('');
+}
+
+// ---- Inline grade entry ----
+function openInlineGrade(classId,type){
+  inlineGradeInput={classId,type};renderGrades();
+  setTimeout(()=>{const el=document.getElementById('ig-score-'+classId+'-'+type);if(el){el.focus();el.select();}},60);
+}
+function cancelInlineGrade(){inlineGradeInput=null;renderGrades();}
+function submitInlineGrade(classId,type){
+  const sEl=document.getElementById('ig-score-'+classId+'-'+type);
+  const tEl=document.getElementById('ig-total-'+classId+'-'+type);
+  if(!sEl)return;
+  const score=parseFloat(sEl.value);
+  const total=parseFloat(tEl?.value)||100;
+  if(isNaN(score)||score<0){sEl.focus();return;}
+  const cls=gradeClasses.find(g=>g.id===classId);if(!cls)return;
+  const labels={test:'Test',quiz:'Quiz',project:'Project',hw:'Homework'};
+  const n=cls.entries.filter(e=>e.type===type).length+1;
+  cls.entries.push({id:nextEntryId++,type,label:labels[type]+(n>1?' '+n:''),score,total});
+  inlineGradeInput=null;renderGrades();saveState();renderWeeklyCard();
+  const pct=(score/total*100).toFixed(0);toast(labels[type]+' logged: '+pct+'%');
 }
 
 // ---- Focus ----
