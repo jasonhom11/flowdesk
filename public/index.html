@@ -229,6 +229,54 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 .toast{background:#262626;color:var(--text);border:.5px solid #363636;border-radius:24px;padding:9px 18px;font-size:13px;font-family:var(--font);opacity:0;transform:translateY(8px) scale(.94);transition:all .22s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;pointer-events:none}
 .toast.show{opacity:1;transform:translateY(0) scale(1)}
 
+/* Layout toggle button */
+.layout-btn{background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:5px 10px 5px 7px;color:var(--text-muted);font-size:11px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:4px;font-family:var(--font);flex-shrink:0;transition:all .12s;white-space:nowrap}
+.layout-btn:active{transform:scale(.95)}
+.layout-btn svg{flex-shrink:0}
+
+/* Mac sidebar extras */
+.nav-logo{display:none;padding:4px 16px 20px;font-size:17px;font-weight:600;color:#fff;letter-spacing:-.3px;border-bottom:.5px solid #1c1c1c;margin-bottom:8px}
+.nav-logo span{color:var(--purple)}
+.nav-spacer{display:none;flex:1}
+.nav-footer{display:none;padding:12px}
+.nav-footer .layout-btn{width:100%;justify-content:center;border-radius:8px;padding:9px 14px}
+
+/* ===== MAC LAYOUT ===== */
+[data-layout="mac"]{max-width:960px;flex-direction:row;padding-top:0;height:100dvh;overflow:hidden}
+
+[data-layout="mac"] .tab-bar{
+  position:sticky;top:0;left:0;transform:none;
+  width:196px;min-width:196px;
+  flex-direction:column;align-items:stretch;
+  border-top:none;border-right:.5px solid #1c1c1c;
+  padding-top:24px;padding-bottom:0;
+  height:100dvh;align-self:flex-start;
+  background:rgba(10,10,10,.98);
+}
+[data-layout="mac"] .tab{
+  flex-direction:row;justify-content:flex-start;
+  padding:10px 13px;border-radius:8px;
+  margin:1px 8px;font-size:13px;gap:10px;
+  width:calc(100% - 16px);text-align:left;
+}
+[data-layout="mac"] .tab.active{background:#16132a}
+[data-layout="mac"] .tab svg{flex-shrink:0}
+[data-layout="mac"] .screen-container{flex:1;padding-bottom:0;overflow-y:auto;height:100dvh}
+[data-layout="mac"] .screen{padding:28px 32px;max-width:720px;animation:none}
+[data-layout="mac"] .screen-header .layout-btn{display:none}
+[data-layout="mac"] .nav-logo{display:block}
+[data-layout="mac"] .nav-spacer{display:flex}
+[data-layout="mac"] .nav-footer{display:flex}
+
+/* Mac wider content tweaks */
+[data-layout="mac"] .stats-row{grid-template-columns:repeat(4,1fr)}
+[data-layout="mac"] .mode-pills{justify-content:flex-start}
+[data-layout="mac"] .timer-wrap{display:flex;align-items:center;gap:40px;padding:0 0 24px;text-align:left}
+[data-layout="mac"] .timer-circle{margin:0}
+[data-layout="mac"] .timer-btns{justify-content:flex-start}
+[data-layout="mac"] .session-stat{margin-bottom:0}
+[data-layout="mac"] .grade-summary{padding:16px 20px}
+
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
 
 /* Score calculator */
@@ -261,7 +309,10 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 <div id="tab-tasks" class="screen active">
   <div class="screen-header">
     <div class="logo">Flow<span>Desk</span></div>
-    <div class="header-sub" id="date-lbl"></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="header-sub" id="date-lbl"></div>
+      <button class="layout-btn" id="layout-btn-tasks" onclick="toggleLayout()"></button>
+    </div>
   </div>
   <div class="stats-row">
     <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value purple" id="s-total">0</div></div>
@@ -291,7 +342,10 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 <div id="tab-grades" class="screen">
   <div class="screen-header">
     <div class="logo">Flow<span>Desk</span></div>
-    <div class="header-sub">Grades</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="header-sub">Grades</div>
+      <button class="layout-btn" id="layout-btn-grades" onclick="toggleLayout()"></button>
+    </div>
   </div>
   <div class="grade-summary">
     <div class="grade-summary-left">
@@ -309,7 +363,7 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 
 <!-- FOCUS -->
 <div id="tab-focus" class="screen">
-  <div class="screen-header"><div class="logo">Flow<span>Desk</span></div><div class="header-sub">Focus</div></div>
+  <div class="screen-header"><div class="logo">Flow<span>Desk</span></div><div style="display:flex;align-items:center;gap:8px"><div class="header-sub">Focus</div><button class="layout-btn" id="layout-btn-focus" onclick="toggleLayout()"></button></div></div>
   <div class="mode-pills">
     <button class="mode-pill active" onclick="setMode(25,'Focus',this)">Focus 25m</button>
     <button class="mode-pill" onclick="setMode(5,'Break',this)">Break 5m</button>
@@ -336,7 +390,7 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 
 <!-- DEADLINES -->
 <div id="tab-deadlines" class="screen">
-  <div class="screen-header"><div class="logo">Flow<span>Desk</span></div><div class="header-sub">Deadlines</div></div>
+  <div class="screen-header"><div class="logo">Flow<span>Desk</span></div><div style="display:flex;align-items:center;gap:8px"><div class="header-sub">Deadlines</div><button class="layout-btn" id="layout-btn-deadlines" onclick="toggleLayout()"></button></div></div>
   <div class="crunch-banner" id="crunch-banner">
     <div class="crunch-banner-title">Exam crunch</div>
     <div class="crunch-banner-text" id="crunch-text"></div>
@@ -357,6 +411,7 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 
 <!-- Bottom Nav -->
 <nav class="tab-bar">
+  <div class="nav-logo">Flow<span>Desk</span></div>
   <button class="tab active" onclick="switchTab('tasks',this)">
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 6h12M4 10h8M4 14h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
     Tasks
@@ -373,6 +428,10 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 8h14M7 2v3M13 2v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
     Deadlines
   </button>
+  <div class="nav-spacer"></div>
+  <div class="nav-footer">
+    <button class="layout-btn" id="layout-btn-nav" onclick="toggleLayout()"></button>
+  </div>
 </nav>
 </div><!-- end app -->
 
@@ -1073,6 +1132,28 @@ function loadState(){
 
 loadState();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js');
+
+// ---- Layout ----
+const MAC_SVG = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1.5" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 12.5h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4.5 9.5v3M9.5 9.5v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`;
+const PHONE_SVG = `<svg width="11" height="14" viewBox="0 0 11 14" fill="none"><rect x=".7" y=".7" width="9.6" height="12.6" rx="2.3" stroke="currentColor" stroke-width="1.4"/><circle cx="5.5" cy="11.2" r=".8" fill="currentColor"/><path d="M3.5 2.5h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`;
+
+function setLayout(mode) {
+  const app = document.getElementById('app');
+  app.dataset.layout = mode;
+  localStorage.setItem('fd-layout', mode);
+  const isMac = mode === 'mac';
+  const html = isMac
+    ? PHONE_SVG + ' iPhone view'
+    : MAC_SVG + ' Mac view';
+  document.querySelectorAll('.layout-btn').forEach(b => b.innerHTML = html);
+}
+
+function toggleLayout() {
+  const isMac = document.getElementById('app').dataset.layout === 'mac';
+  setLayout(isMac ? 'phone' : 'mac');
+}
+
+setLayout(localStorage.getItem('fd-layout') || 'phone');
 </script>
 </body>
 </html>
