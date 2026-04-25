@@ -249,7 +249,7 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
   width:196px;min-width:196px;
   flex-direction:column;align-items:stretch;
   border-top:none;border-right:.5px solid #1c1c1c;
-  padding-top:24px;padding-bottom:0;
+  padding-top:24px;padding-bottom:env(safe-area-inset-bottom);
   height:100dvh;align-self:flex-start;
   background:rgba(10,10,10,.98);
 }
@@ -267,6 +267,11 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 [data-layout="mac"] .nav-logo{display:block}
 [data-layout="mac"] .nav-spacer{display:flex}
 [data-layout="mac"] .nav-footer{display:flex}
+
+/* Always-visible escape button in Mac mode */
+#mac-escape{display:none;position:fixed;bottom:calc(env(safe-area-inset-bottom) + 12px);right:12px;z-index:500;background:rgba(20,20,20,.95);border:.5px solid var(--border);border-radius:20px;padding:7px 12px 7px 9px;color:var(--text-muted);font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font);align-items:center;gap:5px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 2px 12px rgba(0,0,0,.4)}
+#mac-escape:active{transform:scale(.94)}
+[data-layout="mac"] #mac-escape{display:flex}
 
 /* Mac wider content tweaks */
 [data-layout="mac"] .stats-row{grid-template-columns:repeat(4,1fr)}
@@ -298,6 +303,52 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 .prep-topics{margin-top:12px;background:#111020;border:.5px solid #2e2860;border-radius:8px;padding:12px 14px}
 .prep-topics-title{font-size:10px;color:var(--purple);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;font-weight:500}
 .topic-chip{display:inline-block;background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:4px 11px;font-size:12px;color:#aaa;margin:0 4px 4px 0}
+
+/* ---- ONBOARDING ---- */
+.onboard-overlay{position:fixed;inset:0;background:rgba(8,8,8,.98);z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.onboard-card{width:100%;max-width:380px;background:#101010;border:.5px solid #222;border-radius:20px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.6)}
+.onboard-prog{height:2px;background:#1a1a1a}
+.onboard-prog-fill{height:100%;background:var(--purple);transition:width .35s ease}
+.onboard-inner{padding:30px 26px 26px}
+.onboard-step{display:none}
+.onboard-step.active{display:block;animation:fadeIn .22s ease}
+.ob-logo{font-size:32px;font-weight:700;color:#fff;letter-spacing:-.8px;margin-bottom:8px}
+.ob-logo span{color:var(--purple)}
+.ob-tagline{font-size:13px;color:#777;margin-bottom:32px;line-height:1.65}
+.ob-dots{display:flex;gap:6px;justify-content:center;margin-bottom:26px}
+.ob-dot{width:6px;height:6px;border-radius:50%;background:#252525;transition:all .25s cubic-bezier(.34,1.56,.64,1)}
+.ob-dot.active{background:var(--purple);width:22px;border-radius:4px}
+.ob-title{font-size:19px;font-weight:600;color:#fff;margin-bottom:5px;letter-spacing:-.3px}
+.ob-sub{font-size:13px;color:#666;margin-bottom:22px;line-height:1.5}
+.year-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.year-btn{background:var(--card);border:.5px solid var(--border);border-radius:10px;padding:13px;font-size:13px;color:#777;cursor:pointer;font-family:var(--font);transition:all .15s;text-align:center;font-weight:500}
+.year-btn.active{border-color:var(--purple);color:var(--purple);background:#13111f}
+.year-btn:active{transform:scale(.96)}
+.ob-class-row{display:flex;gap:8px;margin-bottom:8px}
+.ob-class-hint{font-size:11px;color:#444;margin-bottom:14px;line-height:1.5}
+
+/* ---- STREAK ---- */
+.streak-card{display:flex;align-items:center;gap:12px;background:#120e1a;border:.5px solid #261e38;border-radius:var(--radius-md);padding:13px 15px;margin-bottom:8px}
+.streak-flame{font-size:26px;filter:drop-shadow(0 0 10px rgba(255,150,50,.45));flex-shrink:0}
+.streak-info{flex:1;min-width:0}
+.streak-num{font-size:26px;font-weight:700;color:#ff9a50;letter-spacing:-1px;line-height:1}
+.streak-lbl{font-size:11px;color:#7a5540;margin-top:2px}
+.streak-badge{background:#1e1228;border:.5px solid #3a2060;border-radius:12px;padding:4px 11px;font-size:11px;color:#9d72cc;flex-shrink:0;white-space:nowrap}
+
+/* ---- WEEKLY ---- */
+.weekly-card{background:var(--card);border:.5px solid var(--border);border-radius:var(--radius-md);padding:14px 15px;margin-bottom:8px}
+.weekly-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.weekly-title{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.7px;font-weight:500}
+.weekly-range-lbl{font-size:10px;color:#444}
+.weekly-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.weekly-stat{text-align:center;background:#111;border:.5px solid #1c1c1c;border-radius:8px;padding:10px 6px}
+.wk-val{font-size:20px;font-weight:600;color:#fff;letter-spacing:-.5px;line-height:1}
+.wk-lbl{font-size:9px;color:#555;margin-top:3px;text-transform:uppercase;letter-spacing:.4px}
+.wk-bar-row{display:flex;gap:4px;align-items:flex-end;height:28px;margin-bottom:4px}
+.wk-bar{flex:1;border-radius:2px 2px 0 0;min-height:3px}
+.wk-day-row{display:flex;gap:4px}
+.wk-day{flex:1;font-size:9px;color:#3a3a3a;text-align:center}
+.wk-day.today{color:var(--purple)}
 </style>
 </head>
 <body>
@@ -308,11 +359,35 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 <!-- TASKS -->
 <div id="tab-tasks" class="screen active">
   <div class="screen-header">
-    <div class="logo">Flow<span>Desk</span></div>
+    <div>
+      <div class="logo">Flow<span>Desk</span></div>
+      <div id="greeting-line" style="font-size:12px;color:#777;margin-top:2px;display:none"></div>
+    </div>
     <div style="display:flex;align-items:center;gap:8px">
       <div class="header-sub" id="date-lbl"></div>
       <button class="layout-btn" id="layout-btn-tasks" onclick="toggleLayout()"></button>
     </div>
+  </div>
+  <div id="streak-card" class="streak-card" style="display:none">
+    <div class="streak-flame">🔥</div>
+    <div class="streak-info">
+      <div class="streak-num" id="streak-num">0</div>
+      <div class="streak-lbl">day streak</div>
+    </div>
+    <div class="streak-badge" id="streak-badge"></div>
+  </div>
+  <div id="weekly-card" class="weekly-card">
+    <div class="weekly-head">
+      <div class="weekly-title">This Week</div>
+      <div class="weekly-range-lbl" id="wk-range"></div>
+    </div>
+    <div class="weekly-grid">
+      <div class="weekly-stat"><div class="wk-val" id="wk-tasks">0</div><div class="wk-lbl">Tasks Done</div></div>
+      <div class="weekly-stat"><div class="wk-val" id="wk-focus">0m</div><div class="wk-lbl">Focus Time</div></div>
+      <div class="weekly-stat"><div class="wk-val" id="wk-grades" style="font-size:15px">—</div><div class="wk-lbl">Grade Δ</div></div>
+    </div>
+    <div class="wk-bar-row" id="wk-bars"></div>
+    <div class="wk-day-row" id="wk-days"></div>
   </div>
   <div class="stats-row">
     <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value purple" id="s-total">0</div></div>
@@ -433,12 +508,70 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
     <button class="layout-btn" id="layout-btn-nav" onclick="toggleLayout()"></button>
   </div>
 </nav>
+  <button id="mac-escape" onclick="toggleLayout()"></button>
 </div><!-- end app -->
 
 <!-- Sheet -->
 <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
 <div class="sheet" id="sheet"><div id="sheet-content"></div></div>
 <div id="toast-container"></div>
+
+<!-- Onboarding Overlay -->
+<div id="onboard-overlay" class="onboard-overlay" style="display:none">
+  <div class="onboard-card">
+    <div class="onboard-prog"><div class="onboard-prog-fill" id="onboard-prog-fill" style="width:33%"></div></div>
+    <div class="onboard-inner">
+      <div class="ob-dots" id="ob-dots-container">
+        <div class="ob-dot active"></div>
+        <div class="ob-dot"></div>
+        <div class="ob-dot"></div>
+      </div>
+      <!-- Step 1: Welcome -->
+      <div class="onboard-step active" id="ob-step1">
+        <div class="ob-logo">Flow<span>Desk</span></div>
+        <div class="ob-tagline">Your personal student dashboard.<br>Stay on top of tasks, grades, and deadlines — all in one place.</div>
+        <button class="btn" style="width:100%" onclick="obNext(1)">Get Started →</button>
+      </div>
+      <!-- Step 2: Name + Year -->
+      <div class="onboard-step" id="ob-step2">
+        <div class="ob-title">Tell us about you</div>
+        <div class="ob-sub">We'll personalize your experience.</div>
+        <div class="sh-field" style="margin-bottom:18px">
+          <div class="sh-label">Your first name</div>
+          <input type="text" id="ob-name" placeholder="e.g. Jason" style="width:100%" autocomplete="given-name" onkeydown="if(event.key==='Enter')obNext(2)">
+        </div>
+        <div class="sh-label" style="margin-bottom:8px">Grade year</div>
+        <div class="year-grid">
+          <button class="year-btn" onclick="selectYear('Freshman',this)">Freshman</button>
+          <button class="year-btn" onclick="selectYear('Sophomore',this)">Sophomore</button>
+          <button class="year-btn" onclick="selectYear('Junior',this)">Junior</button>
+          <button class="year-btn" onclick="selectYear('Senior',this)">Senior</button>
+        </div>
+        <button class="btn" style="width:100%" onclick="obNext(2)">Continue →</button>
+      </div>
+      <!-- Step 3: Classes -->
+      <div class="onboard-step" id="ob-step3">
+        <div class="ob-title">Add your classes</div>
+        <div class="ob-sub">Enter current grades to track your progress.</div>
+        <div class="ob-class-hint">Class name · Current grade % (optional)</div>
+        <div class="ob-class-row">
+          <input type="text" id="ob-cls1" placeholder="e.g. Algebra 2" style="flex:1.8">
+          <input type="number" id="ob-grade1" placeholder="88" min="0" max="100" style="flex:1">
+        </div>
+        <div class="ob-class-row">
+          <input type="text" id="ob-cls2" placeholder="e.g. Biology" style="flex:1.8">
+          <input type="number" id="ob-grade2" placeholder="%" min="0" max="100" style="flex:1">
+        </div>
+        <div class="ob-class-row">
+          <input type="text" id="ob-cls3" placeholder="e.g. English" style="flex:1.8">
+          <input type="number" id="ob-grade3" placeholder="%" min="0" max="100" style="flex:1">
+        </div>
+        <button class="btn" style="width:100%;margin-top:10px" onclick="obFinish()">Let's go! →</button>
+        <button class="btn ghost" style="width:100%;margin-top:8px;font-size:12px" onclick="obFinish()">Skip for now</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
 // ---- State ----
@@ -450,6 +583,11 @@ let timerInterval=null, timerRunning=false, timerTotal=25*60, timerLeft=25*60, c
 let newTaskPriority=null;
 let notifEnabled=false;
 let sheetGoal=87, sheetType='test';
+let profile=null;
+let activityDates=[];
+let weeklyData=null;
+let currentStreak=0, longestStreak=0;
+let obName='', obSelectedYear='', obCurrentStep=1;
 
 const GOAL_OPTIONS=[{l:'A',p:93},{l:'A−',p:90},{l:'B+',p:87},{l:'B',p:83},{l:'B−',p:80},{l:'C+',p:77},{l:'C',p:73}];
 const TYPE_COLORS={test:'var(--red)',quiz:'var(--amber)',project:'var(--purple)',hw:'var(--green)'};
@@ -553,7 +691,7 @@ document.getElementById('task-input').addEventListener('keydown',e=>{if(e.key===
 function toggleDone(id){
   const t=tasks.find(t=>t.id===id);if(!t)return;
   t.done=!t.done;renderTasks();
-  if(t.done){toast('Done ✓');if(navigator.vibrate)navigator.vibrate(40)}
+  if(t.done){toast('Done ✓');if(navigator.vibrate)navigator.vibrate(40);recordActivity();recordWeeklyTask();}
   saveState();
 }
 function deleteTask(id){tasks=tasks.filter(t=>t.id!==id);renderTasks();saveState()}
@@ -839,7 +977,7 @@ function toggleTimer(){
         const mins=Math.round(timerTotal/60);
         if(currentMode==='Focus'){
           sessions.unshift({label:mins+'m focus session',time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),mins});
-          renderSessions();saveState();toast('Focus session done!');
+          renderSessions();saveState();toast('Focus session done!');recordActivity();recordWeeklyFocus(mins);
         }else{toast('Break over — time to focus!')}
         timerLeft=timerTotal;updateTimerDisplay();
       }
@@ -1100,9 +1238,159 @@ function togglePrepQ(i) {
   if (el) el.classList.toggle('open');
 }
 
+// ---- Onboarding ----
+function showOnboarding(){
+  document.getElementById('onboard-overlay').style.display='flex';
+  obGoTo(1);
+}
+function obGoTo(step){
+  obCurrentStep=step;
+  document.querySelectorAll('.onboard-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('ob-step'+step).classList.add('active');
+  document.querySelectorAll('#ob-dots-container .ob-dot').forEach((d,i)=>d.classList.toggle('active',i===step-1));
+  document.getElementById('onboard-prog-fill').style.width=(step/3*100)+'%';
+  if(step===2)setTimeout(()=>{document.getElementById('ob-name')?.focus()},120);
+}
+function obNext(step){
+  if(step===1){obGoTo(2);return}
+  if(step===2){
+    const nameVal=document.getElementById('ob-name').value.trim();
+    if(!nameVal){document.getElementById('ob-name').focus();return}
+    obName=nameVal;obGoTo(3);
+  }
+}
+function obFinish(){
+  profile={name:obName,gradeYear:obSelectedYear,onboarded:true};
+  for(let i=1;i<=3;i++){
+    const n=document.getElementById('ob-cls'+i)?.value?.trim();if(!n)continue;
+    const gv=parseFloat(document.getElementById('ob-grade'+i)?.value);
+    const cls={id:nextGradeId++,name:n,goal:87,weights:{test:40,quiz:30,project:20,hw:10},entries:[]};
+    if(!isNaN(gv)&&gv>=0&&gv<=100)cls.entries.push({id:nextEntryId++,type:'test',label:'Starting grade',score:gv,total:100});
+    gradeClasses.push(cls);
+  }
+  document.getElementById('onboard-overlay').style.display='none';
+  initWeeklyData();renderGreeting();renderStreakCard();renderWeeklyCard();renderGrades();saveState();
+  if(profile.name)toast('Welcome to FlowDesk, '+profile.name+'!');
+}
+function selectYear(year,el){
+  obSelectedYear=year;
+  document.querySelectorAll('.year-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ---- Streak ----
+function recordActivity(){
+  const today=todayStr();
+  if(!activityDates.includes(today)){activityDates.push(today);activityDates.sort();}
+  computeStreakNums();renderStreakCard();
+}
+function computeStreakNums(){
+  if(!activityDates.length){currentStreak=0;longestStreak=0;return}
+  const dates=[...activityDates].sort().reverse();
+  const today=todayStr();
+  const yest=new Date();yest.setDate(yest.getDate()-1);
+  const yestStr=yest.toISOString().split('T')[0];
+  currentStreak=0;
+  if(dates[0]===today||dates[0]===yestStr){
+    let check=dates[0];
+    for(const d of dates){
+      if(d===check){currentStreak++;const dt=new Date(check+'T12:00:00');dt.setDate(dt.getDate()-1);check=dt.toISOString().split('T')[0]}
+      else break;
+    }
+  }
+  longestStreak=0;let cur=1;
+  for(let i=1;i<dates.length;i++){
+    const diff=Math.round((new Date(dates[i-1]+'T12:00:00')-new Date(dates[i]+'T12:00:00'))/86400000);
+    if(diff===1){cur++;longestStreak=Math.max(longestStreak,cur)}else cur=1;
+  }
+  longestStreak=Math.max(longestStreak,currentStreak,dates.length?1:0);
+}
+function renderStreakCard(){
+  const card=document.getElementById('streak-card');if(!card)return;
+  if(currentStreak>0){
+    card.style.display='flex';
+    document.getElementById('streak-num').textContent=currentStreak;
+    const badge=document.getElementById('streak-badge');
+    if(currentStreak>=30)badge.textContent='🏆 On fire!';
+    else if(currentStreak>=14)badge.textContent='🔥 Two weeks!';
+    else if(currentStreak>=7)badge.textContent='⚡ Week streak!';
+    else if(longestStreak>currentStreak)badge.textContent='Best: '+longestStreak+'d';
+    else if(currentStreak>=3)badge.textContent='Keep it up!';
+    else badge.textContent='Day '+currentStreak+'!';
+  }else card.style.display='none';
+}
+function renderGreeting(){
+  const el=document.getElementById('greeting-line');if(!el)return;
+  if(profile&&profile.name){
+    const h=new Date().getHours();
+    const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+    el.textContent=g+', '+profile.name+(profile.gradeYear?' · '+profile.gradeYear:'');
+    el.style.display='block';
+  }else el.style.display='none';
+}
+
+// ---- Weekly ----
+function getWeekStart(){
+  const d=new Date();const day=d.getDay();
+  const mon=new Date(d);mon.setDate(d.getDate()-(day===0?6:day-1));
+  return mon.toISOString().split('T')[0];
+}
+function initWeeklyData(){
+  const ws=getWeekStart();
+  if(!weeklyData||weeklyData.weekStart!==ws){
+    const snap={};
+    gradeClasses.forEach(g=>{const cur=computeClassGrade(g);if(cur!==null)snap[g.id]=cur});
+    weeklyData={weekStart:ws,tasksCompleted:0,focusMinutes:0,dailyActivity:{},gradeSnapshot:snap};
+  }
+}
+function recordWeeklyTask(){
+  initWeeklyData();weeklyData.tasksCompleted++;
+  const today=todayStr();weeklyData.dailyActivity[today]=(weeklyData.dailyActivity[today]||0)+1;
+  renderWeeklyCard();
+}
+function recordWeeklyFocus(mins){
+  initWeeklyData();weeklyData.focusMinutes+=mins;
+  const today=todayStr();weeklyData.dailyActivity[today]=(weeklyData.dailyActivity[today]||0)+1;
+  renderWeeklyCard();
+}
+function renderWeeklyCard(){
+  initWeeklyData();
+  const card=document.getElementById('weekly-card');if(!card)return;
+  document.getElementById('wk-tasks').textContent=weeklyData.tasksCompleted||0;
+  const m=weeklyData.focusMinutes||0;
+  document.getElementById('wk-focus').textContent=m>=60?Math.floor(m/60)+'h'+(m%60?''+m%60+'m':''):m+'m';
+  const gradeEl=document.getElementById('wk-grades');
+  const snap=weeklyData.gradeSnapshot||{};
+  const curGrades=gradeClasses.map(g=>({id:g.id,cur:computeClassGrade(g)})).filter(x=>x.cur!==null);
+  if(curGrades.length&&Object.keys(snap).length){
+    const paired=curGrades.filter(x=>snap[x.id]!==undefined);
+    if(paired.length){
+      const diff=paired.reduce((s,x)=>s+(x.cur-snap[x.id]),0)/paired.length;
+      if(Math.abs(diff)<0.1){gradeEl.textContent='Steady';gradeEl.style.color='#777';gradeEl.style.fontSize='14px'}
+      else if(diff>0){gradeEl.textContent='+'+diff.toFixed(1)+'%';gradeEl.style.color='var(--green)';gradeEl.style.fontSize='15px'}
+      else{gradeEl.textContent=diff.toFixed(1)+'%';gradeEl.style.color='var(--red)';gradeEl.style.fontSize='15px'}
+    }else{const avg=curGrades.reduce((s,x)=>s+x.cur,0)/curGrades.length;gradeEl.textContent=avg.toFixed(1)+'%';gradeEl.style.color=gradeColor(avg);gradeEl.style.fontSize='15px'}
+  }else if(curGrades.length){
+    const avg=curGrades.reduce((s,x)=>s+x.cur,0)/curGrades.length;
+    gradeEl.textContent=avg.toFixed(1)+'%';gradeEl.style.color=gradeColor(avg);gradeEl.style.fontSize='15px';
+  }else{gradeEl.textContent='—';gradeEl.style.color='#555';gradeEl.style.fontSize='20px'}
+  const ws=new Date(weeklyData.weekStart+'T12:00:00');
+  const we=new Date(ws);we.setDate(ws.getDate()+6);
+  document.getElementById('wk-range').textContent=_months[ws.getMonth()]+' '+ws.getDate()+'–'+we.getDate();
+  const today=todayStr();const activity=weeklyData.dailyActivity||{};const dayData=[];
+  for(let i=0;i<7;i++){const d=new Date(ws);d.setDate(ws.getDate()+i);const str=d.toISOString().split('T')[0];dayData.push({str,day:_days[d.getDay()].slice(0,1),isToday:str===today,val:activity[str]||0,isFuture:str>today})}
+  const maxV=Math.max(1,...dayData.map(d=>d.val));
+  document.getElementById('wk-bars').innerHTML=dayData.map(d=>{
+    const h=d.isFuture?3:Math.max(3,Math.round(d.val/maxV*24));
+    const bg=d.isFuture?'#141414':d.isToday?(d.val>0?'var(--purple)':'#1e1e1e'):d.val>0?'var(--purple-dim)':'#1a1a1a';
+    return'<div class="wk-bar" style="height:'+h+'px;background:'+bg+'"></div>';
+  }).join('');
+  document.getElementById('wk-days').innerHTML=dayData.map(d=>`<div class="wk-day${d.isToday?' today':''}">${d.day}</div>`).join('');
+}
+
 // ---- State ----
 function saveState(){
-  try{localStorage.setItem('flowdesk',JSON.stringify({tasks,nextId,gradeClasses,nextGradeId,nextEntryId,deadlines,nextDeadlineId,sessions,notifEnabled}))}catch{}
+  try{localStorage.setItem('flowdesk',JSON.stringify({tasks,nextId,gradeClasses,nextGradeId,nextEntryId,deadlines,nextDeadlineId,sessions,notifEnabled,profile,activityDates,weeklyData}))}catch{}
 }
 function loadState(){
   try{
@@ -1123,11 +1411,17 @@ function loadState(){
         }
         return g;
       });
+      profile=s.profile||null;
+      activityDates=s.activityDates||[];
+      weeklyData=s.weeklyData||null;
     }
   }catch{}
+  computeStreakNums();
   renderTasks();renderGrades();renderSessions();renderDateStrip();renderDeadlines();
   updateTimerDisplay();updateNotifToggle();checkCrunch();
+  renderGreeting();renderStreakCard();renderWeeklyCard();
   if(notifEnabled)setTimeout(checkDeadlineNotifs,1000);
+  if(!profile||!profile.onboarded)setTimeout(showOnboarding,500);
 }
 
 loadState();
@@ -1142,10 +1436,9 @@ function setLayout(mode) {
   app.dataset.layout = mode;
   localStorage.setItem('fd-layout', mode);
   const isMac = mode === 'mac';
-  const html = isMac
-    ? PHONE_SVG + ' iPhone view'
-    : MAC_SVG + ' Mac view';
+  const html = isMac ? PHONE_SVG + ' iPhone view' : MAC_SVG + ' Mac view';
   document.querySelectorAll('.layout-btn').forEach(b => b.innerHTML = html);
+  document.getElementById('mac-escape').innerHTML = PHONE_SVG + ' iPhone view';
 }
 
 function toggleLayout() {
