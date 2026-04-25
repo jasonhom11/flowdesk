@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FlowDesk</title>
+<link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#0a0a0a" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<meta name="apple-mobile-web-app-title" content="FlowDesk" />
+<link rel="apple-touch-icon" href="/icon.svg" />
+<style>
+:root {
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); background: #0a0a0a; min-height: 100vh; padding: 16px; }
+#app { max-width: 720px; margin: 0 auto; min-height: 640px; background: #0f0f0f; border-radius: var(--border-radius-lg); color: #e8e8e8; font-family: var(--font-sans); overflow: hidden; }
+.tab-bar { display: flex; border-bottom: 0.5px solid #1e1e1e; }
+.tab { flex: 1; padding: 13px 4px; text-align: center; font-size: 12px; color: #555; cursor: pointer; background: none; border: none; font-family: var(--font-sans); transition: color 0.15s; }
+.tab.active { color: #7F77DD; border-bottom: 2px solid #7F77DD; }
+.screen { display: none; padding: 18px; }
+.screen.active { display: block; }
+.logo { font-size: 17px; font-weight: 500; color: #fff; margin-bottom: 16px; }
+.logo span { color: #7F77DD; }
+.section-title { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+.stat-card { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: var(--border-radius-md); padding: 11px 13px; }
+.stat-label { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.stat-value { font-size: 20px; font-weight: 500; color: #fff; }
+.stat-value.purple { color: #7F77DD; }
+.stat-value.green { color: #1D9E75; }
+.stat-value.amber { color: #EF9F27; }
+.input-row { display: flex; gap: 8px; margin-bottom: 14px; }
+input[type="text"], input[type="number"], textarea { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: var(--border-radius-md); padding: 10px 13px; color: #e8e8e8; font-size: 13px; font-family: var(--font-sans); outline: none; }
+input[type="text"] { flex: 1; }
+input[type="text"]:focus, input[type="number"]:focus, textarea:focus { border-color: #7F77DD; }
+input[type="text"]::placeholder, input[type="number"]::placeholder, textarea::placeholder { color: #444; }
+.btn { background: #7F77DD; color: #fff; border: none; border-radius: var(--border-radius-md); padding: 10px 15px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font-sans); white-space: nowrap; }
+.btn:hover { background: #534AB7; }
+.btn.secondary { background: #1a1a1a; border: 0.5px solid #7F77DD; color: #7F77DD; }
+.btn.secondary:hover { background: #13111f; }
+.btn.sm { padding: 7px 11px; font-size: 12px; }
+.actions-row { display: flex; gap: 8px; margin-bottom: 13px; flex-wrap: wrap; }
+.filter-btn { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 20px; padding: 5px 11px; font-size: 12px; color: #666; cursor: pointer; font-family: var(--font-sans); }
+.filter-btn.active { border-color: #7F77DD; color: #7F77DD; background: #13111f; }
+.task-list { display: flex; flex-direction: column; gap: 7px; }
+.task-item { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: var(--border-radius-md); padding: 10px 13px; display: flex; align-items: center; gap: 10px; }
+.task-item.done { opacity: 0.4; }
+.task-item.done .task-text { text-decoration: line-through; }
+.task-check { width: 17px; height: 17px; border-radius: 50%; border: 1.5px solid #3a3a3a; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: transparent; transition: all 0.15s; }
+.task-check.checked { background: #1D9E75; border-color: #1D9E75; }
+.task-check.checked::after { content: ''; width: 5px; height: 3px; border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff; transform: rotate(-45deg) translateY(-1px); }
+.task-text { flex: 1; font-size: 13px; color: #d0d0d0; line-height: 1.4; }
+.priority-badge { font-size: 10px; font-weight: 500; padding: 3px 7px; border-radius: 20px; flex-shrink: 0; }
+.p1 { background: #3C1515; color: #E24B4A; }
+.p2 { background: #2a2010; color: #EF9F27; }
+.p3 { background: #0d2a1f; color: #1D9E75; }
+.delete-btn { background: none; border: none; color: #3a3a3a; cursor: pointer; font-size: 15px; padding: 0 2px; flex-shrink: 0; }
+.delete-btn:hover { color: #E24B4A; }
+.empty-state { text-align: center; padding: 24px 0; color: #444; font-size: 13px; }
+.ai-box { background: #13111f; border: 0.5px solid #3a3070; border-radius: var(--border-radius-md); padding: 13px 15px; margin-top: 14px; display: none; }
+.ai-box.visible { display: block; }
+.ai-label { font-size: 11px; color: #7F77DD; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 7px; }
+.ai-text { font-size: 13px; color: #aaa; line-height: 1.6; }
+.loading-dots { display: inline-flex; gap: 4px; align-items: center; }
+.loading-dots span { width: 4px; height: 4px; background: #7F77DD; border-radius: 50%; animation: db 1s infinite; }
+.loading-dots span:nth-child(2) { animation-delay: 0.15s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes db { 0%,80%,100%{transform:translateY(0);opacity:0.4} 40%{transform:translateY(-4px);opacity:1} }
+.mode-pills { display: flex; gap: 8px; justify-content: center; margin-bottom: 18px; }
+.mode-pill { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 20px; padding: 6px 13px; font-size: 12px; color: #666; cursor: pointer; font-family: var(--font-sans); }
+.mode-pill.active { border-color: #7F77DD; color: #7F77DD; background: #13111f; }
+.timer-wrap { text-align: center; padding: 8px 0 20px; }
+.timer-circle { width: 170px; height: 170px; border-radius: 50%; margin: 0 auto 18px; display: flex; align-items: center; justify-content: center; flex-direction: column; position: relative; background: #111; }
+.timer-time { font-size: 34px; font-weight: 500; color: #fff; letter-spacing: -1px; }
+.timer-mode { font-size: 12px; color: #555; margin-top: 4px; }
+.timer-btns { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; }
+svg.ring-svg { position: absolute; top: -3px; left: -3px; transform: rotate(-90deg); }
+.session-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 0.5px solid #1a1a1a; font-size: 13px; color: #888; }
+.session-dot { width: 7px; height: 7px; border-radius: 50%; background: #1D9E75; flex-shrink: 0; }
+.class-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; min-height: 28px; }
+.class-chip { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 20px; padding: 5px 11px; font-size: 12px; color: #aaa; display: flex; align-items: center; gap: 6px; }
+.class-chip button { background: none; border: none; color: #555; cursor: pointer; font-size: 13px; padding: 0; line-height: 1; }
+.class-chip button:hover { color: #E24B4A; }
+.plan-day { margin-bottom: 14px; }
+.plan-day-title { font-size: 12px; color: #7F77DD; font-weight: 500; margin-bottom: 7px; }
+.plan-item { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 9px 13px; margin-bottom: 5px; font-size: 13px; color: #ccc; line-height: 1.5; }
+.grade-card { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: var(--border-radius-md); padding: 13px 15px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+.grade-class-name { flex: 1; font-size: 14px; color: #d0d0d0; }
+.grade-bar-wrap { width: 90px; height: 5px; background: #2a2a2a; border-radius: 3px; overflow: hidden; }
+.grade-bar { height: 100%; border-radius: 3px; transition: width 0.3s; }
+.grade-pct { font-size: 14px; font-weight: 500; min-width: 38px; text-align: right; }
+.grade-edit { background: none; border: none; color: #444; cursor: pointer; font-size: 13px; padding: 0 4px; }
+.grade-edit:hover { color: #7F77DD; }
+.grade-input-row { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
+.grade-input-row input[type="text"] { flex: 1; }
+.grade-input-row input[type="number"] { width: 80px; }
+.gpa-summary { background: #13111f; border: 0.5px solid #3a3070; border-radius: var(--border-radius-md); padding: 13px 15px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+.gpa-label { font-size: 12px; color: #7F77DD; }
+.gpa-value { font-size: 22px; font-weight: 500; color: #fff; }
+.grade-legend { display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #555; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+textarea { resize: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+</style>
+</head>
+<body>
+<div id="app">
+  <h2 class="sr-only">FlowDesk — tasks, focus timer, AI study planner, and grade tracker</h2>
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('tasks',this)">Tasks</button>
+    <button class="tab" onclick="switchTab('grades',this)">Grades</button>
+    <button class="tab" onclick="switchTab('focus',this)">Focus</button>
+    <button class="tab" onclick="switchTab('plan',this)">AI Plan</button>
+  </div>
+
+  <div id="tab-tasks" class="screen active">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div class="logo">Flow<span>Desk</span></div>
+      <div style="font-size:12px;color:#555;" id="date-lbl"></div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value purple" id="s-total">0</div></div>
+      <div class="stat-card"><div class="stat-label">Done</div><div class="stat-value green" id="s-done">0</div></div>
+      <div class="stat-card"><div class="stat-label">High</div><div class="stat-value amber" id="s-urgent">0</div></div>
+    </div>
+    <div class="section-title">Add a task</div>
+    <div class="input-row">
+      <input type="text" id="task-input" placeholder="e.g. Study for bio exam Thursday..." />
+      <button class="btn" onclick="addTask()">Add</button>
+    </div>
+    <div class="actions-row">
+      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setFilter('active',this)">Active</button>
+      <button class="filter-btn" onclick="setFilter('done',this)">Done</button>
+      <button class="btn secondary sm" onclick="prioritizeAI()" style="margin-left:auto;">AI prioritize</button>
+    </div>
+    <div class="section-title">Your tasks</div>
+    <div class="task-list" id="task-list"></div>
+    <div class="ai-box" id="task-ai-box"><div class="ai-label">FlowDesk AI</div><div class="ai-text" id="task-ai-text"></div></div>
+  </div>
+
+  <div id="tab-grades" class="screen">
+    <div class="logo" style="margin-bottom:16px;">Flow<span>Desk</span> <span style="font-size:13px;color:#555;font-weight:400;">Grades</span></div>
+    <div class="gpa-summary">
+      <div><div class="gpa-label">Overall average</div><div style="font-size:11px;color:#444;margin-top:2px;">Across all classes</div></div>
+      <div class="gpa-value" id="avg-display">—</div>
+    </div>
+    <div class="grade-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#1D9E75;"></div>80–100%</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#EF9F27;"></div>65–79%</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#E24B4A;"></div>Below 65%</div>
+    </div>
+    <div class="section-title">Add a class</div>
+    <div class="grade-input-row">
+      <input type="text" id="grade-class-input" placeholder="Class name..." />
+      <input type="number" id="grade-pct-input" placeholder="%" min="0" max="100" />
+      <button class="btn sm" onclick="addGradeClass()">Add</button>
+    </div>
+    <div class="section-title">Your classes</div>
+    <div id="grade-list"><div class="empty-state">No classes added yet</div></div>
+  </div>
+
+  <div id="tab-focus" class="screen">
+    <div class="logo" style="margin-bottom:16px;">Flow<span>Desk</span> <span style="font-size:13px;color:#555;font-weight:400;">Focus</span></div>
+    <div class="mode-pills">
+      <button class="mode-pill active" onclick="setMode(25,'Focus',this)">Focus 25m</button>
+      <button class="mode-pill" onclick="setMode(5,'Short break',this)">Break 5m</button>
+      <button class="mode-pill" onclick="setMode(15,'Long break',this)">Break 15m</button>
+    </div>
+    <div class="timer-wrap">
+      <div class="timer-circle" id="timer-circle">
+        <svg class="ring-svg" width="176" height="176" viewBox="0 0 176 176">
+          <circle cx="88" cy="88" r="85" fill="none" stroke="#1e1e1e" stroke-width="3"/>
+          <circle id="ring-progress" cx="88" cy="88" r="85" fill="none" stroke="#7F77DD" stroke-width="3" stroke-dasharray="534" stroke-dashoffset="0" stroke-linecap="round"/>
+        </svg>
+        <div class="timer-time" id="timer-display">25:00</div>
+        <div class="timer-mode" id="timer-mode-label">Focus</div>
+      </div>
+      <div class="timer-btns">
+        <button class="btn secondary" onclick="resetTimer()">Reset</button>
+        <button class="btn" id="start-btn" onclick="toggleTimer()">Start</button>
+      </div>
+      <div style="font-size:13px;color:#555;margin-bottom:18px;">Sessions today: <span id="session-count" style="color:#7F77DD;font-weight:500;">0</span></div>
+    </div>
+    <div class="section-title">Session log</div>
+    <div id="session-log"><div class="empty-state">No sessions yet — start focusing!</div></div>
+  </div>
+
+  <div id="tab-plan" class="screen">
+    <div class="logo" style="margin-bottom:16px;">Flow<span>Desk</span> <span style="font-size:13px;color:#555;font-weight:400;">AI Plan</span></div>
+    <div class="section-title">Your classes</div>
+    <div class="grade-input-row">
+      <input type="text" id="plan-class-input" placeholder="Add a class..." />
+      <button class="btn sm" onclick="addPlanClass()">Add</button>
+    </div>
+    <div class="class-chips" id="class-chips"></div>
+    <div class="section-title">What's due this week?</div>
+    <div style="margin-bottom:14px;">
+      <textarea id="context-input" placeholder="e.g. Chem exam Friday, Calc homework due Wed, haven't started Stats yet..." style="width:100%;height:72px;line-height:1.5;"></textarea>
+    </div>
+    <button class="btn" onclick="generatePlan()" style="width:100%;margin-bottom:18px;">Generate my week plan</button>
+    <div class="ai-box" id="plan-ai-box">
+      <div class="ai-label">Your AI study plan</div>
+      <div class="plan-output" id="plan-output"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========================================
+// FlowDesk v3
+// Built with assistance from Claude AI
+// ========================================
+
+let tasks = [], filter = 'all', nextId = 1;
+let timerInterval = null, timerRunning = false;
+let timerTotal = 25*60, timerLeft = 25*60, currentMode = 'Focus';
+let sessions = [], planClasses = [];
+let gradeClasses = [];
+
+const now = new Date();
+const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+document.getElementById('date-lbl').textContent = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate();
+
+function switchTab(name, el) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+function addTask() {
+  const inp = document.getElementById('task-input');
+  const text = inp.value.trim();
+  if (!text) return;
+  tasks.push({ id: nextId++, text, done: false, priority: null });
+  inp.value = '';
+  renderTasks();
+  saveState();
+}
+document.getElementById('task-input').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+
+function toggleDone(id) { const t = tasks.find(t => t.id === id); if (t) { t.done = !t.done; renderTasks(); saveState(); } }
+function deleteTask(id) { tasks = tasks.filter(t => t.id !== id); renderTasks(); saveState(); }
+function setFilter(f, el) {
+  filter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderTasks();
+}
+
+function renderTasks() {
+  document.getElementById('s-total').textContent = tasks.length;
+  document.getElementById('s-done').textContent = tasks.filter(t => t.done).length;
+  document.getElementById('s-urgent').textContent = tasks.filter(t => t.priority === 1).length;
+  const list = document.getElementById('task-list');
+  let visible = tasks;
+  if (filter === 'active') visible = tasks.filter(t => !t.done);
+  if (filter === 'done') visible = tasks.filter(t => t.done);
+  if (!visible.length) {
+    list.innerHTML = '<div class="empty-state">' + (!tasks.length ? 'No tasks yet' : 'Nothing here') + '</div>';
+    return;
+  }
+  list.innerHTML = visible.map(t => {
+    const badge = t.priority === 1 ? '<span class="priority-badge p1">High</span>' : t.priority === 2 ? '<span class="priority-badge p2">Med</span>' : t.priority === 3 ? '<span class="priority-badge p3">Low</span>' : '';
+    return '<div class="task-item ' + (t.done?'done':'') + '">' +
+      '<div class="task-check ' + (t.done?'checked':'') + '" onclick="toggleDone(' + t.id + ')"></div>' +
+      '<div class="task-text">' + t.text + '</div>' + badge +
+      '<button class="delete-btn" onclick="deleteTask(' + t.id + ')">×</button>' +
+    '</div>';
+  }).join('');
+}
+
+async function callClaude(systemPrompt, userMessage) {
+  const res = await fetch('/api/claude', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1200,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userMessage }]
+    })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  const raw = data.content.find(b => b.type === 'text').text || '{}';
+  return JSON.parse(raw.replace(/```json|```/g,'').trim());
+}
+
+async function prioritizeAI() {
+  const active = tasks.filter(t => !t.done);
+  if (!active.length) { showTaskAI('Add some tasks first!'); return; }
+  showTaskAI('<div class="loading-dots"><span></span><span></span><span></span></div>');
+  const gradesContext = gradeClasses.length ? '\nCurrent grades: ' + gradeClasses.map(g => g.name + ': ' + g.pct + '%').join(', ') : '';
+  try {
+    const parsed = await callClaude(
+      'You are FlowDesk AI for a college freshman with 7+ classes. Use their current grades to boost priority of tasks in classes where they\'re struggling (below 70%). Return ONLY valid JSON: {"priorities":[{"id_index":0,"level":1,"reason":"short"}],"advice":"1-2 direct sentences mentioning which class needs most attention based on grades"}. level: 1=high,2=medium,3=low.',
+      'Tasks:\n' + active.map((t,i) => (i+1) + '. ' + t.text).join('\n') + gradesContext
+    );
+    parsed.priorities.forEach(p => { if (active[p.id_index]) active[p.id_index].priority = p.level; });
+    tasks.sort((a,b) => { if (a.done !== b.done) return a.done?1:-1; return (a.priority||99)-(b.priority||99); });
+    renderTasks();
+    showTaskAI(parsed.advice || 'Tasks prioritized. Start from the top.');
+    saveState();
+  } catch(e) { showTaskAI('Error: ' + e.message); }
+}
+
+function showTaskAI(html) {
+  const box = document.getElementById('task-ai-box');
+  box.classList.add('visible');
+  document.getElementById('task-ai-text').innerHTML = html;
+}
+
+function gradeColor(pct) {
+  if (pct >= 80) return '#1D9E75';
+  if (pct >= 65) return '#EF9F27';
+  return '#E24B4A';
+}
+
+function addGradeClass() {
+  const nameInp = document.getElementById('grade-class-input');
+  const pctInp = document.getElementById('grade-pct-input');
+  const name = nameInp.value.trim();
+  const pct = parseFloat(pctInp.value);
+  if (!name || isNaN(pct) || pct < 0 || pct > 100) return;
+  const existing = gradeClasses.findIndex(g => g.name.toLowerCase() === name.toLowerCase());
+  if (existing >= 0) { gradeClasses[existing].pct = pct; }
+  else { gradeClasses.push({ name, pct }); }
+  nameInp.value = ''; pctInp.value = '';
+  renderGrades();
+  syncGradesToPlan();
+  saveState();
+}
+document.getElementById('grade-pct-input').addEventListener('keydown', e => { if (e.key === 'Enter') addGradeClass(); });
+
+function deleteGradeClass(name) {
+  gradeClasses = gradeClasses.filter(g => g.name !== name);
+  renderGrades();
+  syncGradesToPlan();
+  saveState();
+}
+
+function renderGrades() {
+  const list = document.getElementById('grade-list');
+  if (!gradeClasses.length) {
+    list.innerHTML = '<div class="empty-state">No classes added yet</div>';
+    document.getElementById('avg-display').textContent = '—';
+    return;
+  }
+  const avg = Math.round(gradeClasses.reduce((s,g) => s + g.pct, 0) / gradeClasses.length);
+  document.getElementById('avg-display').textContent = avg + '%';
+  document.getElementById('avg-display').style.color = gradeColor(avg);
+  const sorted = [...gradeClasses].sort((a,b) => a.pct - b.pct);
+  list.innerHTML = sorted.map(g =>
+    '<div class="grade-card">' +
+      '<div class="grade-class-name">' + g.name + '</div>' +
+      '<div class="grade-bar-wrap"><div class="grade-bar" style="width:' + g.pct + '%;background:' + gradeColor(g.pct) + ';"></div></div>' +
+      '<div class="grade-pct" style="color:' + gradeColor(g.pct) + ';">' + Math.round(g.pct) + '%</div>' +
+      '<button class="grade-edit" onclick="deleteGradeClass(\'' + g.name.replace(/'/g, "\\'") + '\')">×</button>' +
+    '</div>'
+  ).join('');
+}
+
+function syncGradesToPlan() {
+  gradeClasses.forEach(g => { if (!planClasses.includes(g.name)) planClasses.push(g.name); });
+  renderChips();
+}
+
+function addPlanClass() {
+  const inp = document.getElementById('plan-class-input');
+  const name = inp.value.trim();
+  if (!name || planClasses.includes(name)) return;
+  planClasses.push(name); inp.value = '';
+  renderChips();
+  saveState();
+}
+document.getElementById('plan-class-input').addEventListener('keydown', e => { if (e.key === 'Enter') addPlanClass(); });
+
+function removePlanClass(name) { planClasses = planClasses.filter(c => c !== name); renderChips(); saveState(); }
+
+function renderChips() {
+  const el = document.getElementById('class-chips');
+  if (!planClasses.length) {
+    el.innerHTML = '<div style="font-size:12px;color:#444;">Add classes or they sync from Grades tab</div>';
+    return;
+  }
+  el.innerHTML = planClasses.map(c =>
+    '<div class="class-chip">' + c + '<button onclick="removePlanClass(\'' + c.replace(/'/g, "\\'") + '\')">×</button></div>'
+  ).join('');
+}
+
+async function generatePlan() {
+  if (!planClasses.length) { alert('Add at least one class first!'); return; }
+  const ctx = document.getElementById('context-input').value.trim();
+  const gradesInfo = gradeClasses.length ? '\nGrades: ' + gradeClasses.map(g => g.name + ' ' + g.pct + '%').join(', ') : '';
+  const box = document.getElementById('plan-ai-box');
+  const out = document.getElementById('plan-output');
+  box.classList.add('visible');
+  out.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+  try {
+    const parsed = await callClaude(
+      'You are FlowDesk AI making a weekly study plan for a college freshman with 7+ classes who struggles to focus. Use their grades to prioritize struggling classes (below 70%) with more study time. Return ONLY valid JSON: {"days":[{"day":"Monday","tasks":["task1","task2"]},...]}. Include Mon-Sun. Max 3 tasks/day, each under 12 words. Be specific about which class.',
+      'Classes: ' + planClasses.join(', ') + gradesInfo + '\nContext: ' + (ctx || 'General weekly plan')
+    );
+    out.innerHTML = parsed.days.map(d =>
+      '<div class="plan-day">' +
+        '<div class="plan-day-title">' + d.day + '</div>' +
+        d.tasks.map(t => '<div class="plan-item">' + t + '</div>').join('') +
+      '</div>'
+    ).join('');
+  } catch(e) { out.innerHTML = '<div style="color:#E24B4A;font-size:13px;">Error: ' + e.message + '</div>'; }
+}
+
+function setMode(mins, label, el) {
+  if (timerRunning) return;
+  document.querySelectorAll('.mode-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  timerTotal = mins * 60; timerLeft = timerTotal; currentMode = label;
+  updateTimerDisplay();
+}
+
+function toggleTimer() {
+  if (timerRunning) {
+    clearInterval(timerInterval); timerRunning = false;
+    document.getElementById('start-btn').textContent = 'Resume';
+  } else {
+    timerRunning = true;
+    document.getElementById('start-btn').textContent = 'Pause';
+    timerInterval = setInterval(() => {
+      timerLeft--;
+      updateTimerDisplay();
+      if (timerLeft <= 0) {
+        clearInterval(timerInterval); timerRunning = false;
+        document.getElementById('start-btn').textContent = 'Start';
+        if (currentMode === 'Focus') {
+          sessions.unshift({ label: Math.round(timerTotal/60) + 'm focus session', time: new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) });
+          renderSessions();
+          saveState();
+        }
+        timerLeft = timerTotal;
+        updateTimerDisplay();
+      }
+    }, 1000);
+  }
+}
+
+function resetTimer() {
+  clearInterval(timerInterval); timerRunning = false; timerLeft = timerTotal;
+  document.getElementById('start-btn').textContent = 'Start';
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(timerLeft/60), s = timerLeft%60;
+  document.getElementById('timer-display').textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  document.getElementById('timer-mode-label').textContent = currentMode;
+  const circ = 2 * Math.PI * 85;
+  document.getElementById('ring-progress').setAttribute('stroke-dashoffset', Math.round(circ * (1 - timerLeft/timerTotal)));
+  document.getElementById('ring-progress').setAttribute('stroke', currentMode === 'Focus' ? '#7F77DD' : '#1D9E75');
+}
+
+function renderSessions() {
+  const el = document.getElementById('session-log');
+  document.getElementById('session-count').textContent = sessions.length;
+  if (!sessions.length) {
+    el.innerHTML = '<div class="empty-state">No sessions yet — start focusing!</div>';
+    return;
+  }
+  el.innerHTML = sessions.slice(0,8).map(s =>
+    '<div class="session-item"><div class="session-dot"></div><span>' + s.label + '</span><span style="margin-left:auto;font-size:11px;color:#444;">' + s.time + '</span></div>'
+  ).join('');
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('flowdesk', JSON.stringify({ tasks, nextId, gradeClasses, planClasses, sessions }));
+  } catch (e) { console.error('Failed to save:', e); }
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('flowdesk');
+    if (raw) {
+      const s = JSON.parse(raw);
+      tasks = s.tasks || [];
+      nextId = s.nextId || 1;
+      gradeClasses = s.gradeClasses || [];
+      planClasses = s.planClasses || [];
+      sessions = s.sessions || [];
+    }
+  } catch (e) { console.error('Failed to load:', e); }
+  renderTasks(); renderGrades(); renderChips(); renderSessions(); updateTimerDisplay();
+}
+
+loadState();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
+</script>
+</body>
+</html>
