@@ -551,22 +551,31 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
       </div>
       <!-- Step 3: Classes -->
       <div class="onboard-step" id="ob-step3">
-        <div class="ob-title">Add your classes</div>
-        <div class="ob-sub">Enter current grades to track your progress.</div>
-        <div class="ob-class-hint">Class name · Current grade % (optional)</div>
-        <div class="ob-class-row">
-          <input type="text" id="ob-cls1" placeholder="e.g. Algebra 2" style="flex:1.8">
-          <input type="number" id="ob-grade1" placeholder="88" min="0" max="100" style="flex:1">
+        <div class="ob-title">Add your first class</div>
+        <div class="ob-sub">You can add more classes later in the Grades tab.</div>
+        <div class="sh-field" style="margin-bottom:10px">
+          <div class="sh-label">Class name</div>
+          <input type="text" id="ob-cls1" placeholder="e.g. Algebra 2" style="width:100%">
         </div>
-        <div class="ob-class-row">
-          <input type="text" id="ob-cls2" placeholder="e.g. Biology" style="flex:1.8">
-          <input type="number" id="ob-grade2" placeholder="%" min="0" max="100" style="flex:1">
+        <div style="display:flex;gap:8px;margin-bottom:22px">
+          <div style="flex:1">
+            <div class="sh-label" style="margin-bottom:6px">Current grade %</div>
+            <input type="number" id="ob-grade1" placeholder="e.g. 88" min="0" max="100" style="width:100%">
+          </div>
+          <div style="flex:1">
+            <div class="sh-label" style="margin-bottom:6px">Grade goal</div>
+            <select id="ob-goal1" style="width:100%;background:var(--card);border:.5px solid var(--border);border-radius:var(--radius-md);padding:11px 10px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;-webkit-appearance:none;appearance:none;color-scheme:dark">
+              <option value="93">A  (93%+)</option>
+              <option value="90">A− (90%+)</option>
+              <option value="87" selected>B+ (87%+)</option>
+              <option value="83">B  (83%+)</option>
+              <option value="80">B− (80%+)</option>
+              <option value="77">C+ (77%+)</option>
+              <option value="73">C  (73%+)</option>
+            </select>
+          </div>
         </div>
-        <div class="ob-class-row">
-          <input type="text" id="ob-cls3" placeholder="e.g. English" style="flex:1.8">
-          <input type="number" id="ob-grade3" placeholder="%" min="0" max="100" style="flex:1">
-        </div>
-        <button class="btn" style="width:100%;margin-top:10px" onclick="obFinish()">Let's go! →</button>
+        <button class="btn" style="width:100%" onclick="obFinish()">Let's go! →</button>
         <button class="btn ghost" style="width:100%;margin-top:8px;font-size:12px" onclick="obFinish()">Skip for now</button>
       </div>
     </div>
@@ -1263,10 +1272,11 @@ function obNext(step){
 }
 function obFinish(){
   profile={name:obName,gradeYear:obSelectedYear,onboarded:true};
-  for(let i=1;i<=3;i++){
-    const n=document.getElementById('ob-cls'+i)?.value?.trim();if(!n)continue;
-    const gv=parseFloat(document.getElementById('ob-grade'+i)?.value);
-    const cls={id:nextGradeId++,name:n,goal:87,weights:{test:40,quiz:30,project:20,hw:10},entries:[]};
+  const n=document.getElementById('ob-cls1')?.value?.trim();
+  if(n){
+    const gv=parseFloat(document.getElementById('ob-grade1')?.value);
+    const goal=parseInt(document.getElementById('ob-goal1')?.value)||87;
+    const cls={id:nextGradeId++,name:n,goal,weights:{test:40,quiz:30,project:20,hw:10},entries:[]};
     if(!isNaN(gv)&&gv>=0&&gv<=100)cls.entries.push({id:nextEntryId++,type:'test',label:'Starting grade',score:gv,total:100});
     gradeClasses.push(cls);
   }
