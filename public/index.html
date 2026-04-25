@@ -2,232 +2,386 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>FlowDesk</title>
 <link rel="manifest" href="/manifest.json" />
 <meta name="theme-color" content="#0a0a0a" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="FlowDesk" />
 <link rel="apple-touch-icon" href="/icon.svg" />
 <style>
 :root {
-  --border-radius-md: 8px;
-  --border-radius-lg: 12px;
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --purple: #7F77DD;
+  --purple-dim: #534AB7;
+  --green: #1D9E75;
+  --amber: #EF9F27;
+  --red: #E24B4A;
+  --bg: #0a0a0a;
+  --surface: #0f0f0f;
+  --card: #1a1a1a;
+  --border: #242424;
+  --text: #e8e8e8;
+  --text-dim: #999;
+  --text-muted: #555;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --nav-h: 58px;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font-sans); background: #0a0a0a; min-height: 100vh; padding: 16px; }
-#app { max-width: 720px; margin: 0 auto; min-height: 640px; background: #0f0f0f; border-radius: var(--border-radius-lg); color: #e8e8e8; font-family: var(--font-sans); overflow: hidden; }
-.tab-bar { display: flex; border-bottom: 0.5px solid #1e1e1e; }
-.tab { flex: 1; padding: 13px 4px; text-align: center; font-size: 12px; color: #555; cursor: pointer; background: none; border: none; font-family: var(--font-sans); transition: color 0.15s; }
-.tab.active { color: #7F77DD; border-bottom: 2px solid #7F77DD; }
-.screen { display: none; padding: 18px; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { height: 100%; }
+body { font-family: var(--font); background: var(--bg); min-height: 100%; min-height: 100dvh; overscroll-behavior: none; }
+
+#app { max-width: 480px; margin: 0 auto; min-height: 100dvh; background: var(--surface); display: flex; flex-direction: column; position: relative; }
+
+/* --- Bottom Nav --- */
+.tab-bar {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 480px;
+  background: rgba(10,10,10,0.94);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-top: 0.5px solid #1c1c1c;
+  display: flex; z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.tab {
+  flex: 1; padding: 10px 4px 8px; text-align: center;
+  font-size: 10px; color: var(--text-muted); cursor: pointer;
+  background: none; border: none; font-family: var(--font);
+  transition: color 0.15s;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.tab svg { transition: transform 0.12s; opacity: 0.7; }
+.tab:active svg { transform: scale(0.88); }
+.tab.active { color: var(--purple); }
+.tab.active svg { opacity: 1; }
+
+/* --- Screen Container --- */
+.screen-container {
+  flex: 1;
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 4px);
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+.screen { display: none; padding: 20px 16px; animation: fadeIn 0.16s ease; }
 .screen.active { display: block; }
-.logo { font-size: 17px; font-weight: 500; color: #fff; margin-bottom: 16px; }
-.logo span { color: #7F77DD; }
-.section-title { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
-.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
-.stat-card { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: var(--border-radius-md); padding: 11px 13px; }
-.stat-label { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-.stat-value { font-size: 20px; font-weight: 500; color: #fff; }
-.stat-value.purple { color: #7F77DD; }
-.stat-value.green { color: #1D9E75; }
-.stat-value.amber { color: #EF9F27; }
-.input-row { display: flex; gap: 8px; margin-bottom: 14px; }
-input[type="text"], input[type="number"], textarea { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: var(--border-radius-md); padding: 10px 13px; color: #e8e8e8; font-size: 13px; font-family: var(--font-sans); outline: none; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- Typography --- */
+.logo { font-size: 18px; font-weight: 600; color: #fff; letter-spacing: -0.3px; }
+.logo span { color: var(--purple); }
+.section-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 10px; font-weight: 500; }
+.screen-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.header-sub { font-size: 12px; color: var(--text-muted); }
+
+/* --- Stat Cards --- */
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
+.stat-card { background: var(--card); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 12px 12px 10px; }
+.stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; font-weight: 500; }
+.stat-value { font-size: 24px; font-weight: 600; color: #fff; letter-spacing: -0.5px; }
+.stat-value.purple { color: var(--purple); }
+.stat-value.green { color: var(--green); }
+.stat-value.amber { color: var(--amber); }
+
+/* --- Task Progress Bar --- */
+.task-progress { height: 2px; background: #1e1e1e; border-radius: 2px; margin-bottom: 18px; overflow: hidden; }
+.task-progress-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.4s ease; }
+
+/* --- Inputs --- */
+input[type="text"], input[type="number"], textarea {
+  background: var(--card); border: 0.5px solid var(--border);
+  border-radius: var(--radius-md); padding: 11px 13px;
+  color: var(--text); font-size: 14px; font-family: var(--font);
+  outline: none; transition: border-color 0.15s;
+}
+input[type="text"]:focus, input[type="number"]:focus, textarea:focus { border-color: var(--purple); }
+input[type="text"]::placeholder, input[type="number"]::placeholder, textarea::placeholder { color: #383838; }
 input[type="text"] { flex: 1; }
-input[type="text"]:focus, input[type="number"]:focus, textarea:focus { border-color: #7F77DD; }
-input[type="text"]::placeholder, input[type="number"]::placeholder, textarea::placeholder { color: #444; }
-.btn { background: #7F77DD; color: #fff; border: none; border-radius: var(--border-radius-md); padding: 10px 15px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font-sans); white-space: nowrap; }
-.btn:hover { background: #534AB7; }
-.btn.secondary { background: #1a1a1a; border: 0.5px solid #7F77DD; color: #7F77DD; }
-.btn.secondary:hover { background: #13111f; }
-.btn.sm { padding: 7px 11px; font-size: 12px; }
-.actions-row { display: flex; gap: 8px; margin-bottom: 13px; flex-wrap: wrap; }
-.filter-btn { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 20px; padding: 5px 11px; font-size: 12px; color: #666; cursor: pointer; font-family: var(--font-sans); }
-.filter-btn.active { border-color: #7F77DD; color: #7F77DD; background: #13111f; }
-.task-list { display: flex; flex-direction: column; gap: 7px; }
-.task-item { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: var(--border-radius-md); padding: 10px 13px; display: flex; align-items: center; gap: 10px; }
-.task-item.done { opacity: 0.4; }
+.input-row { display: flex; gap: 8px; margin-bottom: 14px; }
+
+/* --- Buttons --- */
+.btn {
+  background: var(--purple); color: #fff; border: none;
+  border-radius: var(--radius-md); padding: 11px 16px;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  font-family: var(--font); white-space: nowrap;
+  transition: background 0.12s, transform 0.1s;
+  -webkit-user-select: none;
+}
+.btn:active { transform: scale(0.96); background: var(--purple-dim); }
+.btn.secondary { background: var(--card); border: 0.5px solid var(--purple); color: var(--purple); }
+.btn.secondary:active { background: #13111f; transform: scale(0.96); }
+.btn.ghost { background: var(--card); border: 0.5px solid var(--border); color: var(--text-muted); }
+.btn.ghost:active { transform: scale(0.96); }
+.btn.sm { padding: 8px 12px; font-size: 12px; }
+
+/* --- Filter Row --- */
+.actions-row { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+.filter-btn { background: var(--card); border: 0.5px solid var(--border); border-radius: 20px; padding: 6px 12px; font-size: 12px; color: #666; cursor: pointer; font-family: var(--font); transition: all 0.12s; }
+.filter-btn.active { border-color: var(--purple); color: var(--purple); background: #13111f; }
+
+/* --- Priority Toggle (new task input) --- */
+.priority-toggle {
+  background: var(--card); border: 0.5px solid var(--border);
+  border-radius: var(--radius-md); width: 38px;
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  cursor: pointer; font-family: var(--font); flex-shrink: 0;
+  transition: all 0.12s; display: flex; align-items: center; justify-content: center;
+}
+.priority-toggle:active { transform: scale(0.94); }
+
+/* --- Task Items --- */
+.task-list { display: flex; flex-direction: column; gap: 6px; }
+.task-item {
+  background: var(--card); border: 0.5px solid var(--border);
+  border-radius: var(--radius-md); padding: 12px 12px;
+  display: flex; align-items: center; gap: 10px;
+  border-left: 3px solid transparent;
+  transition: opacity 0.2s;
+}
+.task-item.done { opacity: 0.35; }
 .task-item.done .task-text { text-decoration: line-through; }
-.task-check { width: 17px; height: 17px; border-radius: 50%; border: 1.5px solid #3a3a3a; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: transparent; transition: all 0.15s; }
-.task-check.checked { background: #1D9E75; border-color: #1D9E75; }
+.task-item.p1-item { border-left-color: var(--red); }
+.task-item.p2-item { border-left-color: var(--amber); }
+.task-item.p3-item { border-left-color: var(--green); }
+
+.task-check {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 1.5px solid #3a3a3a; cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; transition: all 0.18s;
+}
+.task-check.checked { background: var(--green); border-color: var(--green); }
 .task-check.checked::after { content: ''; width: 5px; height: 3px; border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff; transform: rotate(-45deg) translateY(-1px); }
-.task-text { flex: 1; font-size: 13px; color: #d0d0d0; line-height: 1.4; }
-.priority-badge { font-size: 10px; font-weight: 500; padding: 3px 7px; border-radius: 20px; flex-shrink: 0; }
-.p1 { background: #3C1515; color: #E24B4A; }
-.p2 { background: #2a2010; color: #EF9F27; }
-.p3 { background: #0d2a1f; color: #1D9E75; }
-.delete-btn { background: none; border: none; color: #3a3a3a; cursor: pointer; font-size: 15px; padding: 0 2px; flex-shrink: 0; }
-.delete-btn:hover { color: #E24B4A; }
-.empty-state { text-align: center; padding: 24px 0; color: #444; font-size: 13px; }
-.ai-box { background: #13111f; border: 0.5px solid #3a3070; border-radius: var(--border-radius-md); padding: 13px 15px; margin-top: 14px; display: none; }
+.task-check.pop { animation: checkPop 0.28s ease; }
+@keyframes checkPop { 0%{transform:scale(1)} 40%{transform:scale(1.35)} 70%{transform:scale(0.88)} 100%{transform:scale(1)} }
+
+.task-text { flex: 1; font-size: 13px; color: #d0d0d0; line-height: 1.45; }
+.priority-badge { font-size: 10px; font-weight: 600; padding: 3px 7px; border-radius: 20px; flex-shrink: 0; }
+.p1 { background: #3C1515; color: var(--red); }
+.p2 { background: #2a2010; color: var(--amber); }
+.p3 { background: #0d2a1f; color: var(--green); }
+.delete-btn { background: none; border: none; color: #2e2e2e; cursor: pointer; font-size: 18px; padding: 0 2px; flex-shrink: 0; transition: color 0.12s; line-height: 1; }
+.delete-btn:active, .delete-btn:hover { color: var(--red); }
+
+/* --- Empty States --- */
+.empty-state { text-align: center; padding: 28px 0 12px; color: #383838; font-size: 13px; }
+.empty-icon { font-size: 26px; margin-bottom: 8px; display: block; opacity: 0.6; }
+
+/* --- AI Box --- */
+.ai-box { background: #111020; border: 0.5px solid #2e2860; border-radius: var(--radius-md); padding: 14px 15px; margin-top: 14px; display: none; }
 .ai-box.visible { display: block; }
-.ai-label { font-size: 11px; color: #7F77DD; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 7px; }
+.ai-label { font-size: 10px; color: var(--purple); letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 8px; font-weight: 500; }
 .ai-text { font-size: 13px; color: #aaa; line-height: 1.6; }
 .loading-dots { display: inline-flex; gap: 4px; align-items: center; }
-.loading-dots span { width: 4px; height: 4px; background: #7F77DD; border-radius: 50%; animation: db 1s infinite; }
+.loading-dots span { width: 4px; height: 4px; background: var(--purple); border-radius: 50%; animation: db 1s infinite; }
 .loading-dots span:nth-child(2) { animation-delay: 0.15s; }
 .loading-dots span:nth-child(3) { animation-delay: 0.3s; }
 @keyframes db { 0%,80%,100%{transform:translateY(0);opacity:0.4} 40%{transform:translateY(-4px);opacity:1} }
-.mode-pills { display: flex; gap: 8px; justify-content: center; margin-bottom: 18px; }
-.mode-pill { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 20px; padding: 6px 13px; font-size: 12px; color: #666; cursor: pointer; font-family: var(--font-sans); }
-.mode-pill.active { border-color: #7F77DD; color: #7F77DD; background: #13111f; }
-.timer-wrap { text-align: center; padding: 8px 0 20px; }
-.timer-circle { width: 170px; height: 170px; border-radius: 50%; margin: 0 auto 18px; display: flex; align-items: center; justify-content: center; flex-direction: column; position: relative; background: #111; }
-.timer-time { font-size: 34px; font-weight: 500; color: #fff; letter-spacing: -1px; }
-.timer-mode { font-size: 12px; color: #555; margin-top: 4px; }
-.timer-btns { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; }
-svg.ring-svg { position: absolute; top: -3px; left: -3px; transform: rotate(-90deg); }
-.session-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 0.5px solid #1a1a1a; font-size: 13px; color: #888; }
-.session-dot { width: 7px; height: 7px; border-radius: 50%; background: #1D9E75; flex-shrink: 0; }
-.class-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; min-height: 28px; }
-.class-chip { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 20px; padding: 5px 11px; font-size: 12px; color: #aaa; display: flex; align-items: center; gap: 6px; }
-.class-chip button { background: none; border: none; color: #555; cursor: pointer; font-size: 13px; padding: 0; line-height: 1; }
-.class-chip button:hover { color: #E24B4A; }
-.plan-day { margin-bottom: 14px; }
-.plan-day-title { font-size: 12px; color: #7F77DD; font-weight: 500; margin-bottom: 7px; }
-.plan-item { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 9px 13px; margin-bottom: 5px; font-size: 13px; color: #ccc; line-height: 1.5; }
-.grade-card { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: var(--border-radius-md); padding: 13px 15px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
-.grade-class-name { flex: 1; font-size: 14px; color: #d0d0d0; }
-.grade-bar-wrap { width: 90px; height: 5px; background: #2a2a2a; border-radius: 3px; overflow: hidden; }
-.grade-bar { height: 100%; border-radius: 3px; transition: width 0.3s; }
-.grade-pct { font-size: 14px; font-weight: 500; min-width: 38px; text-align: right; }
-.grade-edit { background: none; border: none; color: #444; cursor: pointer; font-size: 13px; padding: 0 4px; }
-.grade-edit:hover { color: #7F77DD; }
-.grade-input-row { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
-.grade-input-row input[type="text"] { flex: 1; }
-.grade-input-row input[type="number"] { width: 80px; }
-.gpa-summary { background: #13111f; border: 0.5px solid #3a3070; border-radius: var(--border-radius-md); padding: 13px 15px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
-.gpa-label { font-size: 12px; color: #7F77DD; }
-.gpa-value { font-size: 22px; font-weight: 500; color: #fff; }
+
+/* --- Grades --- */
+.gpa-summary { background: #111020; border: 0.5px solid #2e2860; border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+.gpa-label { font-size: 12px; color: var(--purple); font-weight: 500; }
+.gpa-sublabel { font-size: 11px; color: #3a3a3a; margin-top: 2px; }
+.gpa-value { font-size: 26px; font-weight: 600; color: #fff; letter-spacing: -1px; }
 .grade-legend { display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
 .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #555; }
-.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
-textarea { resize: none; }
+.legend-dot { width: 7px; height: 7px; border-radius: 50%; }
+.grade-input-row { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
+.grade-input-row input[type="text"] { flex: 1; }
+.grade-input-row input[type="number"] { width: 70px; }
+.grade-card { background: var(--card); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 13px 13px; margin-bottom: 7px; display: flex; align-items: center; gap: 10px; }
+.grade-class-name { flex: 1; font-size: 13px; color: var(--text-dim); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.grade-bar-wrap { width: 72px; height: 5px; background: #222; border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+.grade-bar { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+.grade-pct { font-size: 13px; font-weight: 600; min-width: 36px; text-align: right; letter-spacing: -0.3px; }
+.grade-letter { font-size: 11px; color: #555; font-weight: 500; min-width: 20px; text-align: center; }
+.grade-edit { background: none; border: none; color: #333; cursor: pointer; font-size: 16px; padding: 0 2px; transition: color 0.12s; line-height: 1; }
+.grade-edit:active, .grade-edit:hover { color: var(--red); }
+
+/* --- Focus Timer --- */
+.mode-pills { display: flex; gap: 8px; justify-content: center; margin-bottom: 22px; }
+.mode-pill { background: var(--card); border: 0.5px solid var(--border); border-radius: 20px; padding: 7px 14px; font-size: 12px; color: #666; cursor: pointer; font-family: var(--font); transition: all 0.12s; font-weight: 500; }
+.mode-pill.active { border-color: var(--purple); color: var(--purple); background: #13111f; }
+.mode-pill:active { transform: scale(0.95); }
+.timer-wrap { text-align: center; padding: 4px 0 22px; }
+.timer-circle { width: 192px; height: 192px; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; flex-direction: column; position: relative; background: #0d0d0d; }
+.timer-time { font-size: 40px; font-weight: 600; color: #fff; letter-spacing: -2px; font-variant-numeric: tabular-nums; }
+.timer-mode-label { font-size: 12px; color: var(--text-muted); margin-top: 6px; font-weight: 400; }
+svg.ring-svg { position: absolute; top: -4px; left: -4px; transform: rotate(-90deg); }
+.timer-btns { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; }
+.session-stat { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+.session-stat strong { color: var(--purple); font-weight: 600; }
+.session-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid #161616; font-size: 13px; color: #777; }
+.session-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+
+/* --- Plan Screen --- */
+.class-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; min-height: 28px; }
+.class-chip { background: var(--card); border: 0.5px solid var(--border); border-radius: 20px; padding: 5px 11px; font-size: 12px; color: #aaa; display: flex; align-items: center; gap: 6px; }
+.class-chip button { background: none; border: none; color: #555; cursor: pointer; font-size: 14px; padding: 0; line-height: 1; transition: color 0.12s; }
+.class-chip button:active { color: var(--red); }
+.plan-day { margin-bottom: 16px; }
+.plan-day-title { font-size: 11px; color: var(--purple); font-weight: 600; margin-bottom: 7px; letter-spacing: 0.3px; text-transform: uppercase; }
+.plan-item { background: var(--card); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 10px 13px; margin-bottom: 5px; font-size: 13px; color: #ccc; line-height: 1.5; }
+textarea { resize: none; width: 100%; }
+
+/* --- Toast --- */
+#toast-container { position: fixed; bottom: calc(var(--nav-h) + 10px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 200; display: flex; flex-direction: column-reverse; align-items: center; gap: 6px; pointer-events: none; width: 100%; max-width: 420px; padding: 0 16px; }
+.toast { background: #262626; color: var(--text); border: 0.5px solid #363636; border-radius: 24px; padding: 9px 18px; font-size: 13px; font-family: var(--font); opacity: 0; transform: translateY(8px) scale(0.94); transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1); white-space: nowrap; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateY(0) scale(1); }
+
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
 </style>
 </head>
 <body>
 <div id="app">
-  <h2 class="sr-only">FlowDesk — tasks, focus timer, AI study planner, and grade tracker</h2>
-  <div class="tab-bar">
-    <button class="tab active" onclick="switchTab('tasks',this)">Tasks</button>
-    <button class="tab" onclick="switchTab('grades',this)">Grades</button>
-    <button class="tab" onclick="switchTab('focus',this)">Focus</button>
-    <button class="tab" onclick="switchTab('plan',this)">AI Plan</button>
-  </div>
+  <h2 class="sr-only">FlowDesk</h2>
+  <div class="screen-container">
 
-  <div id="tab-tasks" class="screen active">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <div class="logo">Flow<span>Desk</span></div>
-      <div style="font-size:12px;color:#555;" id="date-lbl"></div>
-    </div>
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value purple" id="s-total">0</div></div>
-      <div class="stat-card"><div class="stat-label">Done</div><div class="stat-value green" id="s-done">0</div></div>
-      <div class="stat-card"><div class="stat-label">High</div><div class="stat-value amber" id="s-urgent">0</div></div>
-    </div>
-    <div class="section-title">Add a task</div>
-    <div class="input-row">
-      <input type="text" id="task-input" placeholder="e.g. Study for bio exam Thursday..." />
-      <button class="btn" onclick="addTask()">Add</button>
-    </div>
-    <div class="actions-row">
-      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
-      <button class="filter-btn" onclick="setFilter('active',this)">Active</button>
-      <button class="filter-btn" onclick="setFilter('done',this)">Done</button>
-      <button class="btn secondary sm" onclick="prioritizeAI()" style="margin-left:auto;">AI prioritize</button>
-    </div>
-    <div class="section-title">Your tasks</div>
-    <div class="task-list" id="task-list"></div>
-    <div class="ai-box" id="task-ai-box"><div class="ai-label">FlowDesk AI</div><div class="ai-text" id="task-ai-text"></div></div>
-  </div>
-
-  <div id="tab-grades" class="screen">
-    <div class="logo" style="margin-bottom:16px;">Flow<span>Desk</span> <span style="font-size:13px;color:#555;font-weight:400;">Grades</span></div>
-    <div class="gpa-summary">
-      <div><div class="gpa-label">Overall average</div><div style="font-size:11px;color:#444;margin-top:2px;">Across all classes</div></div>
-      <div class="gpa-value" id="avg-display">—</div>
-    </div>
-    <div class="grade-legend">
-      <div class="legend-item"><div class="legend-dot" style="background:#1D9E75;"></div>80–100%</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#EF9F27;"></div>65–79%</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#E24B4A;"></div>Below 65%</div>
-    </div>
-    <div class="section-title">Add a class</div>
-    <div class="grade-input-row">
-      <input type="text" id="grade-class-input" placeholder="Class name..." />
-      <input type="number" id="grade-pct-input" placeholder="%" min="0" max="100" />
-      <button class="btn sm" onclick="addGradeClass()">Add</button>
-    </div>
-    <div class="section-title">Your classes</div>
-    <div id="grade-list"><div class="empty-state">No classes added yet</div></div>
-  </div>
-
-  <div id="tab-focus" class="screen">
-    <div class="logo" style="margin-bottom:16px;">Flow<span>Desk</span> <span style="font-size:13px;color:#555;font-weight:400;">Focus</span></div>
-    <div class="mode-pills">
-      <button class="mode-pill active" onclick="setMode(25,'Focus',this)">Focus 25m</button>
-      <button class="mode-pill" onclick="setMode(5,'Short break',this)">Break 5m</button>
-      <button class="mode-pill" onclick="setMode(15,'Long break',this)">Break 15m</button>
-    </div>
-    <div class="timer-wrap">
-      <div class="timer-circle" id="timer-circle">
-        <svg class="ring-svg" width="176" height="176" viewBox="0 0 176 176">
-          <circle cx="88" cy="88" r="85" fill="none" stroke="#1e1e1e" stroke-width="3"/>
-          <circle id="ring-progress" cx="88" cy="88" r="85" fill="none" stroke="#7F77DD" stroke-width="3" stroke-dasharray="534" stroke-dashoffset="0" stroke-linecap="round"/>
-        </svg>
-        <div class="timer-time" id="timer-display">25:00</div>
-        <div class="timer-mode" id="timer-mode-label">Focus</div>
+    <!-- Tasks -->
+    <div id="tab-tasks" class="screen active">
+      <div class="screen-header">
+        <div class="logo">Flow<span>Desk</span></div>
+        <div class="header-sub" id="date-lbl"></div>
       </div>
-      <div class="timer-btns">
-        <button class="btn secondary" onclick="resetTimer()">Reset</button>
-        <button class="btn" id="start-btn" onclick="toggleTimer()">Start</button>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value purple" id="s-total">0</div></div>
+        <div class="stat-card"><div class="stat-label">Done</div><div class="stat-value green" id="s-done">0</div></div>
+        <div class="stat-card"><div class="stat-label">High</div><div class="stat-value amber" id="s-urgent">0</div></div>
       </div>
-      <div style="font-size:13px;color:#555;margin-bottom:18px;">Sessions today: <span id="session-count" style="color:#7F77DD;font-weight:500;">0</span></div>
+      <div class="task-progress"><div class="task-progress-fill" id="task-progress-fill" style="width:0%"></div></div>
+      <div class="section-title">New task</div>
+      <div class="input-row">
+        <button class="priority-toggle" id="priority-toggle" onclick="cyclePriority()">—</button>
+        <input type="text" id="task-input" placeholder="e.g. Study for bio exam Thursday..." />
+        <button class="btn" onclick="addTask()">Add</button>
+      </div>
+      <div class="actions-row">
+        <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+        <button class="filter-btn" onclick="setFilter('active',this)">Active</button>
+        <button class="filter-btn" onclick="setFilter('done',this)">Done</button>
+        <button class="btn secondary sm" onclick="prioritizeAI()" style="margin-left:auto;">AI Sort</button>
+        <button class="btn ghost sm" onclick="clearDone()" id="clear-done-btn" style="display:none;">Clear done</button>
+      </div>
+      <div class="task-list" id="task-list"></div>
+      <div class="ai-box" id="task-ai-box"><div class="ai-label">FlowDesk AI</div><div class="ai-text" id="task-ai-text"></div></div>
     </div>
-    <div class="section-title">Session log</div>
-    <div id="session-log"><div class="empty-state">No sessions yet — start focusing!</div></div>
+
+    <!-- Grades -->
+    <div id="tab-grades" class="screen">
+      <div class="screen-header">
+        <div class="logo">Flow<span>Desk</span></div>
+        <div class="header-sub">Grades</div>
+      </div>
+      <div class="gpa-summary">
+        <div><div class="gpa-label">Overall average</div><div class="gpa-sublabel">Across all classes</div></div>
+        <div class="gpa-value" id="avg-display">—</div>
+      </div>
+      <div class="grade-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>80–100%</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>65–79%</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Below 65%</div>
+      </div>
+      <div class="section-title">Add / update class</div>
+      <div class="grade-input-row">
+        <input type="text" id="grade-class-input" placeholder="Class name..." />
+        <input type="number" id="grade-pct-input" placeholder="%" min="0" max="100" />
+        <button class="btn sm" onclick="addGradeClass()">Save</button>
+      </div>
+      <div class="section-title">Your classes</div>
+      <div id="grade-list"><div class="empty-state"><span class="empty-icon">📊</span>No classes added yet</div></div>
+    </div>
+
+    <!-- Focus -->
+    <div id="tab-focus" class="screen">
+      <div class="screen-header">
+        <div class="logo">Flow<span>Desk</span></div>
+        <div class="header-sub">Focus</div>
+      </div>
+      <div class="mode-pills">
+        <button class="mode-pill active" onclick="setMode(25,'Focus',this)">Focus 25m</button>
+        <button class="mode-pill" onclick="setMode(5,'Break',this)">Break 5m</button>
+        <button class="mode-pill" onclick="setMode(15,'Long break',this)">Break 15m</button>
+      </div>
+      <div class="timer-wrap">
+        <div class="timer-circle">
+          <svg class="ring-svg" width="200" height="200" viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="96" fill="none" stroke="#181818" stroke-width="4"/>
+            <circle id="ring-progress" cx="100" cy="100" r="96" fill="none" stroke="#7F77DD" stroke-width="4" stroke-dasharray="603" stroke-dashoffset="0" stroke-linecap="round"/>
+          </svg>
+          <div class="timer-time" id="timer-display">25:00</div>
+          <div class="timer-mode-label" id="timer-mode-label">Focus</div>
+        </div>
+        <div class="timer-btns">
+          <button class="btn secondary" onclick="resetTimer()">Reset</button>
+          <button class="btn" id="start-btn" onclick="toggleTimer()">Start</button>
+        </div>
+        <div class="session-stat">Sessions: <strong id="session-count">0</strong>&ensp;·&ensp;Focus time: <strong id="focus-time">0m</strong></div>
+      </div>
+      <div class="section-title">Session log</div>
+      <div id="session-log"><div class="empty-state"><span class="empty-icon">⏱</span>No sessions yet</div></div>
+    </div>
+
+    <!-- AI Plan -->
+    <div id="tab-plan" class="screen">
+      <div class="screen-header">
+        <div class="logo">Flow<span>Desk</span></div>
+        <div class="header-sub">AI Plan</div>
+      </div>
+      <div class="section-title">Your classes</div>
+      <div class="grade-input-row">
+        <input type="text" id="plan-class-input" placeholder="Add a class..." />
+        <button class="btn sm" onclick="addPlanClass()">Add</button>
+      </div>
+      <div class="class-chips" id="class-chips"></div>
+      <div class="section-title">What's due this week?</div>
+      <div style="margin-bottom:14px;">
+        <textarea id="context-input" placeholder="e.g. Chem exam Friday, Calc homework due Wed..." style="height:76px;line-height:1.55;"></textarea>
+      </div>
+      <button class="btn" onclick="generatePlan()" style="width:100%;margin-bottom:18px;">Generate my week plan</button>
+      <div class="ai-box" id="plan-ai-box">
+        <div class="ai-label">Your AI study plan</div>
+        <div id="plan-output"></div>
+      </div>
+    </div>
+
   </div>
 
-  <div id="tab-plan" class="screen">
-    <div class="logo" style="margin-bottom:16px;">Flow<span>Desk</span> <span style="font-size:13px;color:#555;font-weight:400;">AI Plan</span></div>
-    <div class="section-title">Your classes</div>
-    <div class="grade-input-row">
-      <input type="text" id="plan-class-input" placeholder="Add a class..." />
-      <button class="btn sm" onclick="addPlanClass()">Add</button>
-    </div>
-    <div class="class-chips" id="class-chips"></div>
-    <div class="section-title">What's due this week?</div>
-    <div style="margin-bottom:14px;">
-      <textarea id="context-input" placeholder="e.g. Chem exam Friday, Calc homework due Wed, haven't started Stats yet..." style="width:100%;height:72px;line-height:1.5;"></textarea>
-    </div>
-    <button class="btn" onclick="generatePlan()" style="width:100%;margin-bottom:18px;">Generate my week plan</button>
-    <div class="ai-box" id="plan-ai-box">
-      <div class="ai-label">Your AI study plan</div>
-      <div class="plan-output" id="plan-output"></div>
-    </div>
-  </div>
+  <!-- Bottom Nav -->
+  <nav class="tab-bar">
+    <button class="tab active" onclick="switchTab('tasks',this)">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 6h12M4 10h8M4 14h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      Tasks
+    </button>
+    <button class="tab" onclick="switchTab('grades',this)">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="12" width="3" height="5" rx="1" fill="currentColor"/><rect x="8.5" y="8" width="3" height="9" rx="1" fill="currentColor"/><rect x="14" y="4" width="3" height="13" rx="1" fill="currentColor"/></svg>
+      Grades
+    </button>
+    <button class="tab" onclick="switchTab('focus',this)">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M10 7.5v4l2.5 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 2h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      Focus
+    </button>
+    <button class="tab" onclick="switchTab('plan',this)">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2.5l1.9 5.8H18l-4.9 3.6 1.9 5.8L10 14l-5 3.7 1.9-5.8L2 8.3h6.1L10 2.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      AI Plan
+    </button>
+  </nav>
 </div>
 
-<script>
-// ========================================
-// FlowDesk v3
-// Built with assistance from Claude AI
-// ========================================
+<div id="toast-container"></div>
 
+<script>
 let tasks = [], filter = 'all', nextId = 1;
 let timerInterval = null, timerRunning = false;
 let timerTotal = 25*60, timerLeft = 25*60, currentMode = 'Focus';
-let sessions = [], planClasses = [];
-let gradeClasses = [];
+let sessions = [], planClasses = [], gradeClasses = [];
+let newTaskPriority = null;
 
-const now = new Date();
-const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-document.getElementById('date-lbl').textContent = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate();
+const _now = new Date();
+const _days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const _months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+document.getElementById('date-lbl').textContent = _days[_now.getDay()] + ', ' + _months[_now.getMonth()] + ' ' + _now.getDate();
 
 function switchTab(name, el) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -236,19 +390,99 @@ function switchTab(name, el) {
   el.classList.add('active');
 }
 
+function toast(msg) {
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  document.getElementById('toast-container').appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+  setTimeout(() => {
+    el.classList.remove('show');
+    setTimeout(() => el.remove(), 300);
+  }, 2000);
+}
+
+function playChime() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [880, 1100, 880].forEach((freq, i) => {
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq; osc.type = 'sine';
+      const t = ctx.currentTime + i * 0.18;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.22, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+      osc.start(t); osc.stop(t + 0.35);
+    });
+  } catch {}
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ---- Priority toggle ----
+const PRIORITY_CYCLE = [null, 1, 2, 3];
+const PRIORITY_LABEL = { null: '—', 1: 'H', 2: 'M', 3: 'L' };
+const PRIORITY_COLOR = { null: '#555', 1: '#E24B4A', 2: '#EF9F27', 3: '#1D9E75' };
+
+function cyclePriority() {
+  newTaskPriority = PRIORITY_CYCLE[(PRIORITY_CYCLE.indexOf(newTaskPriority) + 1) % PRIORITY_CYCLE.length];
+  const btn = document.getElementById('priority-toggle');
+  btn.textContent = PRIORITY_LABEL[newTaskPriority];
+  btn.style.color = PRIORITY_COLOR[newTaskPriority];
+  btn.style.borderColor = newTaskPriority ? PRIORITY_COLOR[newTaskPriority] : '#242424';
+}
+
+function resetPriorityToggle() {
+  newTaskPriority = null;
+  const btn = document.getElementById('priority-toggle');
+  btn.textContent = '—'; btn.style.color = '#555'; btn.style.borderColor = '#242424';
+}
+
+// ---- Tasks ----
 function addTask() {
   const inp = document.getElementById('task-input');
   const text = inp.value.trim();
   if (!text) return;
-  tasks.push({ id: nextId++, text, done: false, priority: null });
+  tasks.push({ id: nextId++, text, done: false, priority: newTaskPriority });
   inp.value = '';
+  resetPriorityToggle();
+  renderTasks();
+  saveState();
+  toast('Task added');
+}
+
+document.getElementById('task-input').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+
+function toggleDone(id) {
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+  t.done = !t.done;
+  renderTasks();
+  if (t.done) {
+    toast('Done ✓');
+    if (navigator.vibrate) navigator.vibrate(40);
+  }
+  saveState();
+}
+
+function deleteTask(id) {
+  tasks = tasks.filter(t => t.id !== id);
   renderTasks();
   saveState();
 }
-document.getElementById('task-input').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
 
-function toggleDone(id) { const t = tasks.find(t => t.id === id); if (t) { t.done = !t.done; renderTasks(); saveState(); } }
-function deleteTask(id) { tasks = tasks.filter(t => t.id !== id); renderTasks(); saveState(); }
+function clearDone() {
+  const n = tasks.filter(t => t.done).length;
+  if (!n) return;
+  tasks = tasks.filter(t => !t.done);
+  renderTasks();
+  saveState();
+  toast('Cleared ' + n + ' done task' + (n > 1 ? 's' : ''));
+}
+
 function setFilter(f, el) {
   filter = f;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -257,72 +491,80 @@ function setFilter(f, el) {
 }
 
 function renderTasks() {
-  document.getElementById('s-total').textContent = tasks.length;
-  document.getElementById('s-done').textContent = tasks.filter(t => t.done).length;
+  const total = tasks.length, done = tasks.filter(t => t.done).length;
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-done').textContent = done;
   document.getElementById('s-urgent').textContent = tasks.filter(t => t.priority === 1).length;
+  document.getElementById('task-progress-fill').style.width = (total ? Math.round(done / total * 100) : 0) + '%';
+  document.getElementById('clear-done-btn').style.display = done ? '' : 'none';
+
   const list = document.getElementById('task-list');
   let visible = tasks;
   if (filter === 'active') visible = tasks.filter(t => !t.done);
   if (filter === 'done') visible = tasks.filter(t => t.done);
   if (!visible.length) {
-    list.innerHTML = '<div class="empty-state">' + (!tasks.length ? 'No tasks yet' : 'Nothing here') + '</div>';
+    list.innerHTML = '<div class="empty-state"><span class="empty-icon">✓</span>' + (!tasks.length ? 'Add your first task above' : 'Nothing here') + '</div>';
     return;
   }
   list.innerHTML = visible.map(t => {
-    const badge = t.priority === 1 ? '<span class="priority-badge p1">High</span>' : t.priority === 2 ? '<span class="priority-badge p2">Med</span>' : t.priority === 3 ? '<span class="priority-badge p3">Low</span>' : '';
-    return '<div class="task-item ' + (t.done?'done':'') + '">' +
-      '<div class="task-check ' + (t.done?'checked':'') + '" onclick="toggleDone(' + t.id + ')"></div>' +
-      '<div class="task-text">' + t.text + '</div>' + badge +
+    const badge = t.priority === 1 ? '<span class="priority-badge p1">High</span>'
+      : t.priority === 2 ? '<span class="priority-badge p2">Med</span>'
+      : t.priority === 3 ? '<span class="priority-badge p3">Low</span>' : '';
+    const borderCls = t.priority === 1 ? ' p1-item' : t.priority === 2 ? ' p2-item' : t.priority === 3 ? ' p3-item' : '';
+    return '<div class="task-item' + (t.done ? ' done' : '') + borderCls + '">' +
+      '<div class="task-check ' + (t.done ? 'checked' : '') + '" onclick="toggleDone(' + t.id + ')"></div>' +
+      '<div class="task-text">' + esc(t.text) + '</div>' + badge +
       '<button class="delete-btn" onclick="deleteTask(' + t.id + ')">×</button>' +
     '</div>';
   }).join('');
 }
 
-async function callClaude(systemPrompt, userMessage) {
+// ---- Claude AI ----
+async function callClaude(system, user) {
   const res = await fetch('/api/claude', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userMessage }]
-    })
+    body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1200, system, messages: [{ role: 'user', content: user }] })
   });
   const data = await res.json();
   if (data.error) throw new Error(data.error);
   const raw = data.content.find(b => b.type === 'text').text || '{}';
-  return JSON.parse(raw.replace(/```json|```/g,'').trim());
+  return JSON.parse(raw.replace(/```json|```/g, '').trim());
 }
 
 async function prioritizeAI() {
   const active = tasks.filter(t => !t.done);
-  if (!active.length) { showTaskAI('Add some tasks first!'); return; }
+  if (!active.length) { toast('Add some tasks first!'); return; }
   showTaskAI('<div class="loading-dots"><span></span><span></span><span></span></div>');
-  const gradesContext = gradeClasses.length ? '\nCurrent grades: ' + gradeClasses.map(g => g.name + ': ' + g.pct + '%').join(', ') : '';
+  const gradesCtx = gradeClasses.length ? '\nGrades: ' + gradeClasses.map(g => g.name + ': ' + g.pct + '%').join(', ') : '';
   try {
     const parsed = await callClaude(
-      'You are FlowDesk AI for a college freshman with 7+ classes. Use their current grades to boost priority of tasks in classes where they\'re struggling (below 70%). Return ONLY valid JSON: {"priorities":[{"id_index":0,"level":1,"reason":"short"}],"advice":"1-2 direct sentences mentioning which class needs most attention based on grades"}. level: 1=high,2=medium,3=low.',
-      'Tasks:\n' + active.map((t,i) => (i+1) + '. ' + t.text).join('\n') + gradesContext
+      'You are FlowDesk AI for a college student. Boost priority for classes where grade is below 70%. Return ONLY valid JSON: {"priorities":[{"id_index":0,"level":1}],"advice":"1-2 sentences"}. level: 1=high,2=med,3=low.',
+      'Tasks:\n' + active.map((t, i) => (i + 1) + '. ' + t.text).join('\n') + gradesCtx
     );
     parsed.priorities.forEach(p => { if (active[p.id_index]) active[p.id_index].priority = p.level; });
-    tasks.sort((a,b) => { if (a.done !== b.done) return a.done?1:-1; return (a.priority||99)-(b.priority||99); });
+    tasks.sort((a, b) => { if (a.done !== b.done) return a.done ? 1 : -1; return (a.priority || 99) - (b.priority || 99); });
     renderTasks();
-    showTaskAI(parsed.advice || 'Tasks prioritized. Start from the top.');
+    showTaskAI(parsed.advice || 'Tasks prioritized — start from the top.');
     saveState();
-  } catch(e) { showTaskAI('Error: ' + e.message); }
+  } catch(e) { showTaskAI('Error: ' + esc(e.message)); }
 }
 
 function showTaskAI(html) {
-  const box = document.getElementById('task-ai-box');
-  box.classList.add('visible');
+  document.getElementById('task-ai-box').classList.add('visible');
   document.getElementById('task-ai-text').innerHTML = html;
 }
 
+// ---- Grades ----
 function gradeColor(pct) {
-  if (pct >= 80) return '#1D9E75';
-  if (pct >= 65) return '#EF9F27';
-  return '#E24B4A';
+  return pct >= 80 ? '#1D9E75' : pct >= 65 ? '#EF9F27' : '#E24B4A';
+}
+
+function letterGrade(pct) {
+  if (pct >= 93) return 'A'; if (pct >= 90) return 'A−';
+  if (pct >= 87) return 'B+'; if (pct >= 83) return 'B'; if (pct >= 80) return 'B−';
+  if (pct >= 77) return 'C+'; if (pct >= 73) return 'C'; if (pct >= 70) return 'C−';
+  if (pct >= 67) return 'D+'; if (pct >= 60) return 'D'; return 'F';
 }
 
 function addGradeClass() {
@@ -331,40 +573,38 @@ function addGradeClass() {
   const name = nameInp.value.trim();
   const pct = parseFloat(pctInp.value);
   if (!name || isNaN(pct) || pct < 0 || pct > 100) return;
-  const existing = gradeClasses.findIndex(g => g.name.toLowerCase() === name.toLowerCase());
-  if (existing >= 0) { gradeClasses[existing].pct = pct; }
-  else { gradeClasses.push({ name, pct }); }
+  const idx = gradeClasses.findIndex(g => g.name.toLowerCase() === name.toLowerCase());
+  if (idx >= 0) { gradeClasses[idx].pct = pct; toast('Grade updated'); }
+  else { gradeClasses.push({ name, pct }); toast(name + ' added'); }
   nameInp.value = ''; pctInp.value = '';
-  renderGrades();
-  syncGradesToPlan();
-  saveState();
+  renderGrades(); syncGradesToPlan(); saveState();
 }
+
 document.getElementById('grade-pct-input').addEventListener('keydown', e => { if (e.key === 'Enter') addGradeClass(); });
 
 function deleteGradeClass(name) {
   gradeClasses = gradeClasses.filter(g => g.name !== name);
-  renderGrades();
-  syncGradesToPlan();
-  saveState();
+  renderGrades(); syncGradesToPlan(); saveState();
 }
 
 function renderGrades() {
   const list = document.getElementById('grade-list');
   if (!gradeClasses.length) {
-    list.innerHTML = '<div class="empty-state">No classes added yet</div>';
+    list.innerHTML = '<div class="empty-state"><span class="empty-icon">📊</span>No classes added yet</div>';
     document.getElementById('avg-display').textContent = '—';
+    document.getElementById('avg-display').style.color = '#fff';
     return;
   }
-  const avg = Math.round(gradeClasses.reduce((s,g) => s + g.pct, 0) / gradeClasses.length);
-  document.getElementById('avg-display').textContent = avg + '%';
-  document.getElementById('avg-display').style.color = gradeColor(avg);
-  const sorted = [...gradeClasses].sort((a,b) => a.pct - b.pct);
-  list.innerHTML = sorted.map(g =>
+  const avg = Math.round(gradeClasses.reduce((s, g) => s + g.pct, 0) / gradeClasses.length);
+  const avgEl = document.getElementById('avg-display');
+  avgEl.textContent = avg + '%'; avgEl.style.color = gradeColor(avg);
+  list.innerHTML = [...gradeClasses].sort((a, b) => a.pct - b.pct).map(g =>
     '<div class="grade-card">' +
-      '<div class="grade-class-name">' + g.name + '</div>' +
-      '<div class="grade-bar-wrap"><div class="grade-bar" style="width:' + g.pct + '%;background:' + gradeColor(g.pct) + ';"></div></div>' +
-      '<div class="grade-pct" style="color:' + gradeColor(g.pct) + ';">' + Math.round(g.pct) + '%</div>' +
-      '<button class="grade-edit" onclick="deleteGradeClass(\'' + g.name.replace(/'/g, "\\'") + '\')">×</button>' +
+      '<div class="grade-class-name">' + esc(g.name) + '</div>' +
+      '<div class="grade-bar-wrap"><div class="grade-bar" style="width:' + g.pct + '%;background:' + gradeColor(g.pct) + '"></div></div>' +
+      '<div class="grade-pct" style="color:' + gradeColor(g.pct) + '">' + Math.round(g.pct) + '%</div>' +
+      '<div class="grade-letter">' + letterGrade(Math.round(g.pct)) + '</div>' +
+      '<button class="grade-edit" onclick="deleteGradeClass(' + JSON.stringify(g.name) + ')">×</button>' +
     '</div>'
   ).join('');
 }
@@ -374,51 +614,54 @@ function syncGradesToPlan() {
   renderChips();
 }
 
+// ---- Plan ----
 function addPlanClass() {
   const inp = document.getElementById('plan-class-input');
   const name = inp.value.trim();
   if (!name || planClasses.includes(name)) return;
   planClasses.push(name); inp.value = '';
-  renderChips();
-  saveState();
+  renderChips(); saveState();
 }
+
 document.getElementById('plan-class-input').addEventListener('keydown', e => { if (e.key === 'Enter') addPlanClass(); });
 
-function removePlanClass(name) { planClasses = planClasses.filter(c => c !== name); renderChips(); saveState(); }
+function removePlanClass(name) {
+  planClasses = planClasses.filter(c => c !== name);
+  renderChips(); saveState();
+}
 
 function renderChips() {
   const el = document.getElementById('class-chips');
   if (!planClasses.length) {
-    el.innerHTML = '<div style="font-size:12px;color:#444;">Add classes or they sync from Grades tab</div>';
+    el.innerHTML = '<div style="font-size:12px;color:#383838;">Add classes above, or sync from Grades tab</div>';
     return;
   }
   el.innerHTML = planClasses.map(c =>
-    '<div class="class-chip">' + c + '<button onclick="removePlanClass(\'' + c.replace(/'/g, "\\'") + '\')">×</button></div>'
+    '<div class="class-chip">' + esc(c) + '<button onclick="removePlanClass(' + JSON.stringify(c) + ')">×</button></div>'
   ).join('');
 }
 
 async function generatePlan() {
-  if (!planClasses.length) { alert('Add at least one class first!'); return; }
+  if (!planClasses.length) { toast('Add at least one class first!'); return; }
   const ctx = document.getElementById('context-input').value.trim();
   const gradesInfo = gradeClasses.length ? '\nGrades: ' + gradeClasses.map(g => g.name + ' ' + g.pct + '%').join(', ') : '';
-  const box = document.getElementById('plan-ai-box');
-  const out = document.getElementById('plan-output');
+  const box = document.getElementById('plan-ai-box'), out = document.getElementById('plan-output');
   box.classList.add('visible');
   out.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
   try {
     const parsed = await callClaude(
-      'You are FlowDesk AI making a weekly study plan for a college freshman with 7+ classes who struggles to focus. Use their grades to prioritize struggling classes (below 70%) with more study time. Return ONLY valid JSON: {"days":[{"day":"Monday","tasks":["task1","task2"]},...]}. Include Mon-Sun. Max 3 tasks/day, each under 12 words. Be specific about which class.',
+      'Make a weekly study plan for a college student. Prioritize classes below 70%. Return ONLY valid JSON: {"days":[{"day":"Monday","tasks":["task1","task2"]},...]}. Mon–Sun, max 3 tasks/day, under 12 words each.',
       'Classes: ' + planClasses.join(', ') + gradesInfo + '\nContext: ' + (ctx || 'General weekly plan')
     );
     out.innerHTML = parsed.days.map(d =>
-      '<div class="plan-day">' +
-        '<div class="plan-day-title">' + d.day + '</div>' +
-        d.tasks.map(t => '<div class="plan-item">' + t + '</div>').join('') +
-      '</div>'
+      '<div class="plan-day"><div class="plan-day-title">' + esc(d.day) + '</div>' +
+      d.tasks.map(t => '<div class="plan-item">' + esc(t) + '</div>').join('') + '</div>'
     ).join('');
-  } catch(e) { out.innerHTML = '<div style="color:#E24B4A;font-size:13px;">Error: ' + e.message + '</div>'; }
+    toast('Plan generated!');
+  } catch(e) { out.innerHTML = '<div style="color:var(--red);font-size:13px;">Error: ' + esc(e.message) + '</div>'; }
 }
 
+// ---- Focus Timer ----
 function setMode(mins, label, el) {
   if (timerRunning) return;
   document.querySelectorAll('.mode-pill').forEach(p => p.classList.remove('active'));
@@ -440,10 +683,15 @@ function toggleTimer() {
       if (timerLeft <= 0) {
         clearInterval(timerInterval); timerRunning = false;
         document.getElementById('start-btn').textContent = 'Start';
+        playChime();
+        if (navigator.vibrate) navigator.vibrate([150, 80, 150]);
+        const mins = Math.round(timerTotal / 60);
         if (currentMode === 'Focus') {
-          sessions.unshift({ label: Math.round(timerTotal/60) + 'm focus session', time: new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) });
-          renderSessions();
-          saveState();
+          sessions.unshift({ label: mins + 'm focus session', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), mins });
+          renderSessions(); saveState();
+          toast('Focus session done!');
+        } else {
+          toast('Break over — time to focus!');
         }
         timerLeft = timerTotal;
         updateTimerDisplay();
@@ -459,30 +707,35 @@ function resetTimer() {
 }
 
 function updateTimerDisplay() {
-  const m = Math.floor(timerLeft/60), s = timerLeft%60;
-  document.getElementById('timer-display').textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  const m = Math.floor(timerLeft / 60), s = timerLeft % 60;
+  document.getElementById('timer-display').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
   document.getElementById('timer-mode-label').textContent = currentMode;
-  const circ = 2 * Math.PI * 85;
-  document.getElementById('ring-progress').setAttribute('stroke-dashoffset', Math.round(circ * (1 - timerLeft/timerTotal)));
-  document.getElementById('ring-progress').setAttribute('stroke', currentMode === 'Focus' ? '#7F77DD' : '#1D9E75');
+  const circ = 2 * Math.PI * 96;
+  const ring = document.getElementById('ring-progress');
+  ring.setAttribute('stroke-dasharray', String(Math.round(circ)));
+  ring.setAttribute('stroke-dashoffset', String(Math.round(circ * (1 - timerLeft / timerTotal))));
+  ring.setAttribute('stroke', currentMode === 'Focus' ? '#7F77DD' : '#1D9E75');
 }
 
 function renderSessions() {
-  const el = document.getElementById('session-log');
   document.getElementById('session-count').textContent = sessions.length;
+  const totalMins = sessions.reduce((s, sess) => s + (sess.mins || parseInt(sess.label) || 25), 0);
+  document.getElementById('focus-time').textContent = totalMins >= 60
+    ? Math.floor(totalMins / 60) + 'h ' + (totalMins % 60) + 'm'
+    : totalMins + 'm';
+  const el = document.getElementById('session-log');
   if (!sessions.length) {
-    el.innerHTML = '<div class="empty-state">No sessions yet — start focusing!</div>';
+    el.innerHTML = '<div class="empty-state"><span class="empty-icon">⏱</span>No sessions yet</div>';
     return;
   }
-  el.innerHTML = sessions.slice(0,8).map(s =>
-    '<div class="session-item"><div class="session-dot"></div><span>' + s.label + '</span><span style="margin-left:auto;font-size:11px;color:#444;">' + s.time + '</span></div>'
+  el.innerHTML = sessions.slice(0, 8).map(s =>
+    '<div class="session-item"><div class="session-dot"></div><span>' + esc(s.label) + '</span><span style="margin-left:auto;font-size:11px;color:#444">' + s.time + '</span></div>'
   ).join('');
 }
 
+// ---- State ----
 function saveState() {
-  try {
-    localStorage.setItem('flowdesk', JSON.stringify({ tasks, nextId, gradeClasses, planClasses, sessions }));
-  } catch (e) { console.error('Failed to save:', e); }
+  try { localStorage.setItem('flowdesk', JSON.stringify({ tasks, nextId, gradeClasses, planClasses, sessions })); } catch {}
 }
 
 function loadState() {
@@ -490,21 +743,16 @@ function loadState() {
     const raw = localStorage.getItem('flowdesk');
     if (raw) {
       const s = JSON.parse(raw);
-      tasks = s.tasks || [];
-      nextId = s.nextId || 1;
-      gradeClasses = s.gradeClasses || [];
-      planClasses = s.planClasses || [];
-      sessions = s.sessions || [];
+      tasks = s.tasks || []; nextId = s.nextId || 1;
+      gradeClasses = s.gradeClasses || []; planClasses = s.planClasses || []; sessions = s.sessions || [];
     }
-  } catch (e) { console.error('Failed to load:', e); }
+  } catch {}
   renderTasks(); renderGrades(); renderChips(); renderSessions(); updateTimerDisplay();
 }
 
 loadState();
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js');
-}
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 </script>
 </body>
 </html>
