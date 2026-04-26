@@ -534,6 +534,9 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 .daily-insight-card{background:#0D0B1E;border:.5px solid rgba(108,99,255,.2);border-radius:12px;padding:13px 15px;margin-top:10px;box-shadow:var(--glow-sm)}
 .di-label{font-size:9px;color:var(--purple);text-transform:uppercase;letter-spacing:.9px;font-weight:700;margin-bottom:7px}
 .di-text{font-size:13px;color:var(--text-dim);line-height:1.65;font-style:italic}
+.daily-quote{border-left:2.5px solid var(--purple);padding:9px 13px;margin-top:10px;background:rgba(108,99,255,0.04);border-radius:0 8px 8px 0}
+.daily-quote-text{font-size:13px;font-style:italic;color:var(--text-dim);line-height:1.55}
+.daily-quote-attr{font-size:11px;color:var(--text-muted);margin-top:5px}
 
 /* ---- SETTINGS PANEL ---- */
 .settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:600;opacity:0;pointer-events:none;transition:opacity .2s}
@@ -673,6 +676,7 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
     <div class="wk-bar-row" id="wk-bars"></div>
     <div class="wk-day-row" id="wk-days"></div>
   </div>
+  <div class="daily-quote" id="daily-quote"></div>
 </div>
 
 <!-- TASKS -->
@@ -688,7 +692,6 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
   </div>
   <div class="task-progress"><div class="task-progress-fill" id="task-progress-fill" style="width:0%"></div></div>
   <div class="input-row" style="margin-bottom:12px">
-    <button class="priority-toggle" id="priority-toggle" onclick="cyclePriority()">—</button>
     <input type="text" id="task-input" placeholder="Quick add a task…"/>
     <button class="btn" onclick="addTask()">Add</button>
   </div>
@@ -1124,13 +1127,12 @@ const P_COLOR={null:'#555',1:'#FF4757',2:'#FFA502',3:'#00D4AA'};
 function cyclePriority(){
   newTaskPriority=P_CYCLE[(P_CYCLE.indexOf(newTaskPriority)+1)%P_CYCLE.length];
   const b=document.getElementById('priority-toggle');
-  b.textContent=P_LABEL[newTaskPriority];b.style.color=P_COLOR[newTaskPriority];
-  b.style.borderColor=newTaskPriority?P_COLOR[newTaskPriority]:'#242424';
+  if(b){b.textContent=P_LABEL[newTaskPriority];b.style.color=P_COLOR[newTaskPriority];b.style.borderColor=newTaskPriority?P_COLOR[newTaskPriority]:'#242424';}
 }
 function resetPriorityToggle(){
   newTaskPriority=null;
   const b=document.getElementById('priority-toggle');
-  b.textContent='—';b.style.color='#555';b.style.borderColor='var(--border)';
+  if(b){b.textContent='—';b.style.color='#555';b.style.borderColor='var(--border)';}
 }
 
 // ---- Tasks ----
@@ -1685,6 +1687,7 @@ ${expanded?`<div class="grade-card-body">${entriesHtml}${buildScoreCalc(g)}<butt
 
   requestAnimationFrame(()=>{
     document.querySelectorAll('.grade-bar-fill[data-w]').forEach(el=>{el.style.width=el.dataset.w;});
+    if(expandedClassId!==null)updateScoreCalc(expandedClassId);
   });
 }
 
@@ -1798,7 +1801,7 @@ function renderFocusChart(){
   if(wkEl)wkEl.textContent=totalMins>=60?Math.floor(totalMins/60)+'h '+(totalMins%60?totalMins%60+'m':''):totalMins+'m';
   el.innerHTML=`<div class="fc-bars">${dayData.map(d=>{
     const h=d.isFuture?4:Math.max(4,Math.round(d.mins/maxMins*56));
-    const bg=d.isFuture?'#141414':d.mins>=60?'var(--green)':d.mins>=25?'var(--purple)':d.mins>0?'var(--purple-dim)':'#1a1a1a';
+    const bg=d.isFuture?'#1c1c2c':d.mins>=60?'var(--green)':d.mins>0?'var(--purple)':'#1c1c2c';
     const lbl=d.mins>0?(d.mins>=60?Math.floor(d.mins/60)+'h':d.mins+'m'):'';
     return`<div class="fc-bar-col"><div class="fc-bar-label">${lbl}</div><div class="fc-bar" style="height:${h}px;background:${bg}"></div><div class="fc-bar-day${d.isToday?' fc-today':''}">${d.day}</div></div>`;
   }).join('')}</div>`;
@@ -2324,7 +2327,7 @@ function renderWeeklyCard(){
   const maxV=Math.max(1,...dayData.map(d=>d.val));
   document.getElementById('wk-bars').innerHTML=dayData.map(d=>{
     const h=d.isFuture?3:Math.max(3,Math.round(d.val/maxV*24));
-    const bg=d.isFuture?'#141414':d.isToday?(d.val>0?'var(--purple)':'#1e1e1e'):d.val>0?'var(--purple-dim)':'#1a1a1a';
+    const bg=d.isFuture?'#1c1c2c':d.val>0?'var(--purple)':'#1c1c2c';
     return'<div class="wk-bar" style="height:'+h+'px;background:'+bg+'"></div>';
   }).join('');
   document.getElementById('wk-days').innerHTML=dayData.map(d=>`<div class="wk-day${d.isToday?' today':''}">${d.day}</div>`).join('');
@@ -2372,6 +2375,48 @@ function startFocusOnTask(){
   const btn=document.querySelector('.tab[data-tab="focus"]');
   if(btn)switchTab('focus',btn);
 }
+// ---- Daily Quote ----
+const DAILY_QUOTES=[
+  ["The secret of getting ahead is getting started.","Mark Twain"],
+  ["It always seems impossible until it's done.","Nelson Mandela"],
+  ["Don't watch the clock; do what it does. Keep going.","Sam Levenson"],
+  ["The expert in anything was once a beginner.","Helen Hayes"],
+  ["Success is the sum of small efforts repeated day in and day out.","Robert Collier"],
+  ["You don't have to be great to start, but you have to start to be great.","Zig Ziglar"],
+  ["The beautiful thing about learning is that no one can take it away from you.","B.B. King"],
+  ["Study hard, for the well is deep and our brains are shallow.","Richard Baxter"],
+  ["Genius is 1% inspiration and 99% perspiration.","Thomas Edison"],
+  ["Education is the most powerful weapon which you can use to change the world.","Nelson Mandela"],
+  ["The more that you read, the more things you will know.","Dr. Seuss"],
+  ["A little progress each day adds up to big results.","Satya Nani"],
+  ["Perseverance is not a long race; it is many short races one after another.","Walter Elliot"],
+  ["The only way to do great work is to love what you do.","Steve Jobs"],
+  ["Learning is not attained by chance; it must be sought with ardor.","Abigail Adams"],
+  ["The difference between ordinary and extraordinary is practice.","Vladimir Horowitz"],
+  ["You are braver than you believe, stronger than you seem, and smarter than you think.","A.A. Milne"],
+  ["Fall seven times, stand up eight.","Japanese Proverb"],
+  ["Hard work beats talent when talent doesn't work hard.","Tim Notke"],
+  ["The roots of education are bitter, but the fruit is sweet.","Aristotle"],
+  ["Motivation gets you going, but discipline keeps you growing.","John C. Maxwell"],
+  ["The mind is not a vessel to be filled, but a fire to be kindled.","Plutarch"],
+  ["Done is better than perfect.","Sheryl Sandberg"],
+  ["Small daily improvements are the key to staggering long-term results.","Robin Sharma"],
+  ["If you're going through hell, keep going.","Winston Churchill"],
+  ["What we learn with pleasure we never forget.","Alfred Mercier"],
+  ["Believe you can and you're halfway there.","Theodore Roosevelt"],
+  ["Your future is created by what you do today, not tomorrow.","Robert Kiyosaki"],
+  ["The harder I work, the luckier I get.","Gary Player"],
+  ["Push yourself, because no one else is going to do it for you.","Unknown"]
+];
+function renderDailyQuote(){
+  const el=document.getElementById('daily-quote');if(!el)return;
+  const d=new Date();
+  const start=new Date(d.getFullYear(),0,0);
+  const day=Math.floor((d-start)/86400000);
+  const q=DAILY_QUOTES[day%DAILY_QUOTES.length];
+  el.innerHTML=`<div class="daily-quote-text">"${q[0]}"</div><div class="daily-quote-attr">— ${q[1]}</div>`;
+}
+
 function renderHome(){
   const today=todayStr();
   const h=new Date().getHours();
@@ -2393,6 +2438,7 @@ function renderHome(){
   const wkEl=document.getElementById('hs-tasks');
   if(wkEl)animateCounter(wkEl,weeklyData?.tasksCompleted||0);
   renderGradeHealth();
+  renderDailyQuote();
 }
 function renderGradeHealth(){
   const section=document.getElementById('grade-health-section');
