@@ -12,14 +12,19 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
 <link rel="apple-touch-icon" href="/icon.svg"/>
 <meta name="mobile-web-app-capable" content="yes"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>@media(display-mode:standalone){body{user-select:none;-webkit-user-select:none}}</style>
 <style>
 :root{
-  --purple:#7F77DD;--purple-dim:#534AB7;--green:#1D9E75;--amber:#EF9F27;--red:#E24B4A;
-  --bg:#0a0a0a;--surface:#0f0f0f;--card:#1a1a1a;--border:#242424;
-  --text:#e8e8e8;--text-dim:#999;--text-muted:#555;
-  --radius-md:10px;--nav-h:58px;
-  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --purple:#6C63FF;--purple-dim:#4F48CC;--green:#00D4AA;--amber:#FFA502;--red:#FF4757;
+  --bg:#080810;--surface:#0F0F1A;--card:#161623;--border:#1E1E2E;
+  --text:#E8E8F0;--text-dim:#9090A8;--text-muted:#50506A;
+  --radius-md:12px;--nav-h:60px;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --glow:0 0 0 0.5px rgba(108,99,255,0.25),0 2px 12px rgba(0,0,0,.4);
+  --glow-sm:0 0 0 0.5px rgba(108,99,255,0.2);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{height:100%}
@@ -27,7 +32,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100dvh;overscroll-b
 #app{max-width:540px;margin:0 auto;min-height:100dvh;background:var(--surface);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
 
 /* Nav */
-.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:540px;background:rgba(10,10,10,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:.5px solid #1c1c1c;display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:540px;background:rgba(8,8,16,.96);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:.5px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
 .tab{flex:1;padding:10px 4px 8px;text-align:center;font-size:10px;color:var(--text-muted);cursor:pointer;background:none;border:none;font-family:var(--font);transition:color .15s;display:flex;flex-direction:column;align-items:center;gap:3px}
 .tab svg{transition:transform .12s;opacity:.7}
 .tab:active svg{transform:scale(.88)}
@@ -49,7 +54,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100dvh;overscroll-b
 
 /* Stats */
 .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
-.stat-card{background:var(--card);border:.5px solid var(--border);border-radius:var(--radius-md);padding:12px 12px 10px}
+.stat-card{background:var(--card);border:.5px solid var(--border);border-radius:var(--radius-md);padding:12px 12px 10px;box-shadow:var(--glow-sm)}
 .stat-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;font-weight:500}
 .stat-value{font-size:24px;font-weight:600;color:#fff;letter-spacing:-.5px}
 .stat-value.purple{color:var(--purple)}.stat-value.green{color:var(--green)}.stat-value.amber{color:var(--amber)}
@@ -70,7 +75,7 @@ input[type=text]{flex:1}
 .btn{background:var(--purple);color:#fff;border:none;border-radius:var(--radius-md);padding:11px 16px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font);white-space:nowrap;transition:background .12s,transform .1s;-webkit-user-select:none}
 .btn:active{transform:scale(.96);background:var(--purple-dim)}
 .btn.secondary{background:var(--card);border:.5px solid var(--purple);color:var(--purple)}
-.btn.secondary:active{background:#13111f;transform:scale(.96)}
+.btn.secondary:active{background:#100F23;transform:scale(.96)}
 .btn.ghost{background:var(--card);border:.5px solid var(--border);color:var(--text-muted)}
 .btn.ghost:active{transform:scale(.96)}
 .btn.sm{padding:8px 12px;font-size:12px}
@@ -78,7 +83,7 @@ input[type=text]{flex:1}
 /* Filters */
 .actions-row{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
 .filter-btn{background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;color:#666;cursor:pointer;font-family:var(--font);transition:all .12s}
-.filter-btn.active{border-color:var(--purple);color:var(--purple);background:#13111f}
+.filter-btn.active{border-color:var(--purple);color:var(--purple);background:#100F23}
 
 /* Priority toggle */
 .priority-toggle{background:var(--card);border:.5px solid var(--border);border-radius:var(--radius-md);width:38px;font-size:11px;font-weight:700;color:var(--text-muted);cursor:pointer;font-family:var(--font);flex-shrink:0;transition:all .12s;display:flex;align-items:center;justify-content:center}
@@ -100,7 +105,7 @@ input[type=text]{flex:1}
 .delete-btn:active,.delete-btn:hover{color:var(--red)}
 
 /* AI box */
-.ai-box{background:#111020;border:.5px solid #2e2860;border-radius:var(--radius-md);padding:14px 15px;margin-top:14px;display:none}
+.ai-box{background:#0D0B1E;border:.5px solid rgba(108,99,255,.35);border-radius:var(--radius-md);padding:14px 15px;margin-top:14px;display:none;box-shadow:var(--glow-sm)}
 .ai-box.visible{display:block}
 .ai-label{font-size:10px;color:var(--purple);letter-spacing:.6px;text-transform:uppercase;margin-bottom:8px;font-weight:500}
 .ai-text{font-size:13px;color:#aaa;line-height:1.6}
@@ -115,12 +120,12 @@ input[type=text]{flex:1}
 .empty-icon{font-size:26px;margin-bottom:8px;display:block;opacity:.6}
 
 /* ---- GRADES ---- */
-.grade-summary{background:#111020;border:.5px solid #2e2860;border-radius:var(--radius-md);padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.grade-summary{background:#0D0B1E;border:.5px solid #2A2455;border-radius:var(--radius-md);padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
 .grade-summary-left .label{font-size:12px;color:var(--purple);font-weight:500}
 .grade-summary-left .sub{font-size:11px;color:#3a3a3a;margin-top:2px}
 .grade-summary-right{font-size:26px;font-weight:600;color:#fff;letter-spacing:-1px}
 
-.grade-card{background:var(--card);border:.5px solid var(--border);border-radius:var(--radius-md);margin-bottom:8px;overflow:hidden}
+.grade-card{background:var(--card);border:.5px solid var(--border);border-radius:var(--radius-md);margin-bottom:8px;overflow:hidden;box-shadow:var(--glow-sm)}
 .grade-card-header{padding:13px 14px;display:flex;align-items:center;gap:10px;cursor:pointer}
 .grade-card-header:active{background:#1e1e1e}
 .grade-card-name{flex:1;font-size:14px;color:#ddd;font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -160,7 +165,7 @@ input[type=text]{flex:1}
 .entry-line-pct{font-weight:600;flex-shrink:0;font-size:12px}
 .entry-line-raw{font-size:10px;color:#3a3a3a;flex-shrink:0}
 .add-grade-btn{background:none;border:.5px solid #242424;border-radius:6px;padding:5px 11px;font-size:11px;color:#555;cursor:pointer;font-family:var(--font);transition:all .15s;margin-top:4px;display:inline-flex;align-items:center;gap:3px;-webkit-tap-highlight-color:transparent}
-.add-grade-btn:active{border-color:var(--purple);color:var(--purple);background:#0d0a1a}
+.add-grade-btn:active{border-color:var(--purple);color:var(--purple);background:#100F23}
 .ig-row{display:flex;align-items:center;gap:7px;margin-top:7px}
 .ig-row input{background:#0d0d0d;border:.5px solid #2a2a2a;border-radius:8px;padding:10px 6px;color:#fff;font-size:16px;font-family:var(--font);outline:none;width:68px;text-align:center;-webkit-appearance:none;transition:border-color .15s}
 .ig-row input:focus{border-color:var(--purple)}
@@ -172,7 +177,7 @@ input[type=text]{flex:1}
 /* ---- FOCUS ---- */
 .mode-pills{display:flex;gap:8px;justify-content:center;margin-bottom:22px}
 .mode-pill{background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:7px 14px;font-size:12px;color:#666;cursor:pointer;font-family:var(--font);transition:all .12s;font-weight:500}
-.mode-pill.active{border-color:var(--purple);color:var(--purple);background:#13111f}
+.mode-pill.active{border-color:var(--purple);color:var(--purple);background:#100F23}
 .mode-pill:active{transform:scale(.95)}
 .timer-wrap{text-align:center;padding:4px 0 22px}
 .timer-circle{width:192px;height:192px;border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative;background:#0d0d0d}
@@ -189,8 +194,8 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 .date-strip{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:16px;scrollbar-width:none}
 .date-strip::-webkit-scrollbar{display:none}
 .date-day{min-width:46px;background:var(--card);border:.5px solid var(--border);border-radius:10px;padding:8px 4px 6px;text-align:center;cursor:pointer;flex-shrink:0;transition:all .12s;position:relative}
-.date-day.today{border-color:var(--purple);background:#13111f}
-.date-day.selected{border-color:var(--purple);background:#13111f}
+.date-day.today{border-color:var(--purple);background:#100F23}
+.date-day.selected{border-color:var(--purple);background:#100F23}
 .date-day-name{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px}
 .date-day-num{font-size:18px;font-weight:600;color:#ccc;line-height:1.2}
 .date-day.today .date-day-name,.date-day.today .date-day-num{color:var(--purple)}
@@ -229,7 +234,7 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 /* Bottom sheet */
 .sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;opacity:0;pointer-events:none;transition:opacity .2s}
 .sheet-overlay.open{opacity:1;pointer-events:auto}
-.sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:540px;background:#161616;border-radius:16px 16px 0 0;z-index:400;padding:0 0 calc(env(safe-area-inset-bottom) + 20px);transition:transform .3s cubic-bezier(.32,.72,0,1);max-height:90dvh;overflow-y:auto}
+.sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:540px;background:rgba(22,22,35,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:.5px solid rgba(108,99,255,0.25);border-radius:20px 20px 0 0;z-index:400;padding:0 0 calc(env(safe-area-inset-bottom) + 20px);transition:transform .3s cubic-bezier(.32,.72,0,1);max-height:90dvh;overflow-y:auto}
 .sheet.open{transform:translateX(-50%) translateY(0)}
 .sheet-handle{width:36px;height:4px;background:#333;border-radius:2px;margin:12px auto 16px}
 .sheet-body{padding:0 16px}
@@ -238,13 +243,13 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 .sh-label{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;font-weight:500}
 .goal-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
 .goal-pill{background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;color:#666;cursor:pointer;font-family:var(--font);transition:all .12s}
-.goal-pill.active{border-color:var(--purple);color:var(--purple);background:#13111f}
+.goal-pill.active{border-color:var(--purple);color:var(--purple);background:#100F23}
 .weights-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .weight-field label{font-size:11px;color:#555;display:block;margin-bottom:4px}
 .weight-field input{width:100%}
 .type-select{display:flex;gap:6px;flex-wrap:wrap}
 .type-btn{background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:var(--font);color:#666;transition:all .12s}
-.type-btn.active{border-color:var(--purple);color:var(--purple);background:#13111f}
+.type-btn.active{border-color:var(--purple);color:var(--purple);background:#100F23}
 
 /* CSV import */
 .csv-hint{font-size:12px;color:#555;line-height:1.6;margin-bottom:10px}
@@ -275,7 +280,7 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 .prep-q-text{flex:1;font-size:13px;color:#d0d0d0;line-height:1.4}
 .prep-q-body{padding:0 14px 13px;font-size:13px;color:#888;line-height:1.6;border-top:.5px solid #1e1e1e;padding-top:10px;display:none}
 .prep-q-body.open{display:block}
-.prep-topics{margin-top:12px;background:#111020;border:.5px solid #2e2860;border-radius:8px;padding:12px 14px}
+.prep-topics{margin-top:12px;background:#0D0B1E;border:.5px solid #2A2455;border-radius:8px;padding:12px 14px}
 .prep-topics-title{font-size:10px;color:var(--purple);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;font-weight:500}
 .topic-chip{display:inline-block;background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:4px 11px;font-size:12px;color:#aaa;margin:0 4px 4px 0}
 
@@ -297,13 +302,13 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 .ob-sub{font-size:13px;color:#666;margin-bottom:22px;line-height:1.5}
 .year-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
 .year-btn{background:var(--card);border:.5px solid var(--border);border-radius:10px;padding:13px;font-size:13px;color:#777;cursor:pointer;font-family:var(--font);transition:all .15s;text-align:center;font-weight:500}
-.year-btn.active{border-color:var(--purple);color:var(--purple);background:#13111f}
+.year-btn.active{border-color:var(--purple);color:var(--purple);background:#100F23}
 .year-btn:active{transform:scale(.96)}
 .ob-class-row{display:flex;gap:8px;margin-bottom:8px}
 .ob-class-hint{font-size:11px;color:#444;margin-bottom:14px;line-height:1.5}
 
 /* ---- STREAK ---- */
-.streak-card{display:flex;align-items:center;gap:12px;background:#120e1a;border:.5px solid #261e38;border-radius:var(--radius-md);padding:13px 15px;margin-bottom:8px}
+.streak-card{display:flex;align-items:center;gap:12px;background:#130F20;border:.5px solid rgba(108,99,255,.2);border-radius:var(--radius-md);padding:13px 15px;margin-bottom:8px;box-shadow:var(--glow-sm)}
 .streak-flame{font-size:26px;filter:drop-shadow(0 0 10px rgba(255,150,50,.45));flex-shrink:0}
 .streak-info{flex:1;min-width:0}
 .streak-num{font-size:26px;font-weight:700;color:#ff9a50;letter-spacing:-1px;line-height:1}
@@ -311,7 +316,7 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 .streak-badge{background:#1e1228;border:.5px solid #3a2060;border-radius:12px;padding:4px 11px;font-size:11px;color:#9d72cc;flex-shrink:0;white-space:nowrap}
 
 /* ---- WEEKLY ---- */
-.weekly-card{background:var(--card);border:.5px solid var(--border);border-radius:var(--radius-md);padding:14px 15px;margin-bottom:8px}
+.weekly-card{background:var(--card);border:.5px solid var(--border);border-radius:var(--radius-md);padding:14px 15px;margin-bottom:8px;box-shadow:var(--glow-sm)}
 .weekly-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .weekly-title{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.7px;font-weight:500}
 .weekly-range-lbl{font-size:10px;color:#444}
@@ -370,6 +375,64 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 .es-icon{width:54px;height:54px;background:#131313;border:.5px solid #1e1e1e;border-radius:15px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
 .es-title{font-size:15px;font-weight:600;color:#2d2d2d;margin-bottom:6px}
 .es-sub{font-size:12px;color:#262626;line-height:1.65;max-width:200px}
+
+/* ---- HOME TAB ---- */
+.home-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;padding-top:2px}
+.home-greeting{font-size:23px;font-weight:700;color:#fff;letter-spacing:-.4px;line-height:1.2}
+.home-subline{font-size:12px;color:var(--text-muted);margin-top:3px;font-weight:400}
+.settings-btn{background:var(--card);border:.5px solid var(--border);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);cursor:pointer;flex-shrink:0;transition:all .15s;box-shadow:var(--glow-sm)}
+.settings-btn:active{background:#1e1e2e;transform:scale(.9)}
+
+.home-focus-card{background:linear-gradient(135deg,#1A1836 0%,#0D0B1E 100%);border:.5px solid rgba(108,99,255,.4);border-radius:14px;padding:16px 18px;margin-bottom:12px;box-shadow:0 0 0 0.5px rgba(108,99,255,.2),0 4px 20px rgba(108,99,255,.1)}
+.hfc-label{font-size:9px;color:var(--purple);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:8px}
+.hfc-task{font-size:15px;font-weight:600;color:#e0e0f0;line-height:1.45;margin-bottom:14px;min-height:22px}
+.hfc-empty{color:var(--text-muted);font-weight:400;font-style:italic}
+.hfc-btn{background:var(--purple);color:#fff;border:none;border-radius:10px;padding:11px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);transition:background .12s,transform .1s;width:100%;letter-spacing:-.1px}
+.hfc-btn:active{background:var(--purple-dim);transform:scale(.97)}
+
+.home-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.home-stat-card{background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:12px 10px;text-align:center;box-shadow:var(--glow-sm)}
+.home-stat-val{font-size:24px;font-weight:700;letter-spacing:-.5px;line-height:1.1;margin-bottom:4px}
+.home-stat-val.orange{color:#ff9a50}
+.home-stat-val.purple{color:var(--purple)}
+.home-stat-val.green{color:var(--green)}
+.home-stat-lbl{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:500}
+
+.grade-health-section{margin-bottom:12px}
+.grade-health-row{display:flex;flex-wrap:wrap;gap:6px}
+.gh-chip{display:flex;align-items:center;gap:6px;background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:5px 10px 5px 8px;box-shadow:var(--glow-sm)}
+.gh-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.gh-name{font-size:11px;color:var(--text-dim);font-weight:500;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gh-pct{font-size:11px;font-weight:700;flex-shrink:0}
+
+.what-next-home-btn{width:100%;margin-bottom:12px;display:flex!important;align-items:center;justify-content:center;padding:14px 18px;font-size:14px;font-weight:600;letter-spacing:-.1px;background:linear-gradient(135deg,#1A1836,var(--purple));border:.5px solid rgba(108,99,255,.5)!important;color:#fff!important}
+.what-next-home-btn:active{opacity:.85;transform:scale(.97)}
+
+.daily-insight-card{background:#0D0B1E;border:.5px solid rgba(108,99,255,.2);border-radius:12px;padding:13px 15px;margin-top:10px;box-shadow:var(--glow-sm)}
+.di-label{font-size:9px;color:var(--purple);text-transform:uppercase;letter-spacing:.9px;font-weight:700;margin-bottom:7px}
+.di-text{font-size:13px;color:var(--text-dim);line-height:1.65;font-style:italic}
+
+/* ---- SETTINGS PANEL ---- */
+.settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:600;opacity:0;pointer-events:none;transition:opacity .2s}
+.settings-overlay.open{opacity:1;pointer-events:auto}
+.settings-panel{position:fixed;top:0;right:0;width:min(310px,100vw);height:100%;background:#0F0F1A;border-left:.5px solid var(--border);z-index:700;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);overflow-y:auto;padding-bottom:calc(env(safe-area-inset-bottom)+20px)}
+.settings-panel.open{transform:translateX(0)}
+.settings-top{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top)+16px) 18px 14px;border-bottom:.5px solid var(--border)}
+.settings-title{font-size:17px;font-weight:700;color:#fff;letter-spacing:-.2px}
+.settings-close{background:var(--card);border:.5px solid var(--border);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);cursor:pointer;font-size:18px;line-height:1;flex-shrink:0;transition:all .12s}
+.settings-close:active{transform:scale(.9)}
+.settings-body{padding:8px 18px 20px}
+.settings-section-title{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.7px;font-weight:600;margin:18px 0 8px;padding-bottom:6px;border-bottom:.5px solid var(--border)}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:.5px solid #181828}
+.settings-row:last-child{border-bottom:none}
+.settings-row-label{font-size:14px;color:var(--text);font-weight:500}
+.settings-row-sub{font-size:11px;color:var(--text-muted);margin-top:2px;line-height:1.4}
+.settings-about{text-align:center;padding:18px 0 4px;font-size:12px;color:#333;line-height:1.7}
+.settings-about strong{color:#444}
+
+/* Splash update */
+.splash-mark{animation:splashPulse 2s ease infinite;background:#131030!important;border:.5px solid #2A2455!important;box-shadow:0 0 40px rgba(108,99,255,.22)!important}
+@keyframes splashPulse{0%,100%{box-shadow:0 0 40px rgba(108,99,255,.18)}50%{box-shadow:0 0 60px rgba(108,99,255,.38)}}
 </style>
 </head>
 <body>
@@ -388,16 +451,48 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 <h2 class="sr-only">FlowDesk</h2>
 <div class="screen-container">
 
-<!-- TASKS -->
-<div id="tab-tasks" class="screen active">
-  <div class="screen-header">
+<!-- HOME -->
+<div id="tab-home" class="screen active">
+  <div class="home-header">
     <div>
-      <div class="logo">Flow<span>Desk</span></div>
-      <div id="greeting-line" style="font-size:12px;color:#777;margin-top:2px;display:none"></div>
+      <div class="home-greeting" id="home-greeting">Good morning</div>
+      <div class="home-subline" id="home-subline"></div>
     </div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <div class="header-sub" id="date-lbl"></div>
+    <button class="settings-btn" onclick="openSettings()" aria-label="Settings">
+      <svg width="19" height="19" viewBox="0 0 19 19" fill="none"><circle cx="9.5" cy="9.5" r="2.5" stroke="currentColor" stroke-width="1.55"/><path d="M9.5 2v1.5M9.5 15.5V17M2 9.5h1.5M15.5 9.5H17M3.7 3.7l1.06 1.06M13.24 13.24l1.06 1.06M3.7 15.3l1.06-1.06M13.24 5.76l1.06-1.06" stroke="currentColor" stroke-width="1.55" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="home-focus-card">
+    <div class="hfc-label">Today's Focus</div>
+    <div class="hfc-task" id="hfc-task-text"><span class="hfc-empty">Add a priority task to get started</span></div>
+    <button class="hfc-btn" onclick="startFocusOnTask()">Start Focus Session →</button>
+  </div>
+  <div class="home-stats-row">
+    <div class="home-stat-card">
+      <div class="home-stat-val orange" id="hs-streak">0</div>
+      <div class="home-stat-lbl">Day Streak</div>
     </div>
+    <div class="home-stat-card">
+      <div class="home-stat-val purple" id="hs-sessions">0</div>
+      <div class="home-stat-lbl">Sessions Today</div>
+    </div>
+    <div class="home-stat-card">
+      <div class="home-stat-val green" id="hs-tasks">0</div>
+      <div class="home-stat-lbl">Done This Week</div>
+    </div>
+  </div>
+  <div id="grade-health-section" style="display:none">
+    <div class="section-title">Grade Health</div>
+    <div class="grade-health-row" id="grade-health-row"></div>
+  </div>
+  <button class="btn what-next-home-btn" id="what-next-home-btn" onclick="whatNextHome()">
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style="margin-right:7px;flex-shrink:0"><circle cx="7.5" cy="7.5" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M7.5 5v3l1.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    What should I do next?
+  </button>
+  <div class="ai-box" id="home-ai-box"><div class="ai-label">FlowDesk AI</div><div class="ai-text" id="home-ai-text"></div></div>
+  <div class="daily-insight-card" id="daily-insight-card" style="display:none">
+    <div class="di-label">Daily Insight</div>
+    <div class="di-text" id="daily-insight-text"></div>
   </div>
   <div id="streak-card" class="streak-card" style="display:none">
     <div class="streak-flame">🔥</div>
@@ -420,6 +515,18 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
     <div class="wk-bar-row" id="wk-bars"></div>
     <div class="wk-day-row" id="wk-days"></div>
   </div>
+</div>
+
+<!-- TASKS -->
+<div id="tab-tasks" class="screen">
+  <div class="screen-header">
+    <div>
+      <div class="logo">Flow<span>Desk</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="header-sub" id="date-lbl"></div>
+    </div>
+  </div>
   <div class="stats-row">
     <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value purple" id="s-total">0</div></div>
     <div class="stat-card"><div class="stat-label">Done</div><div class="stat-value green" id="s-done">0</div></div>
@@ -439,7 +546,7 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
     <button class="btn secondary sm" onclick="prioritizeAI()" style="margin-left:auto">AI Sort</button>
     <button class="btn ghost sm" onclick="clearDone()" id="clear-done-btn" style="display:none">Clear done</button>
   </div>
-  <button class="btn" id="what-next-btn" onclick="whatNext()" style="width:100%;margin-bottom:14px;background:#13111f;border:.5px solid var(--purple);color:var(--purple)">What should I do next?</button>
+  <button class="btn" id="what-next-btn" onclick="whatNext()" style="width:100%;margin-bottom:14px;background:#100F23;border:.5px solid var(--purple);color:var(--purple)">What should I do next?</button>
   <div class="task-list" id="task-list"></div>
   <div class="ai-box" id="task-ai-box"><div class="ai-label">FlowDesk AI</div><div class="ai-text" id="task-ai-text"></div></div>
 </div>
@@ -516,21 +623,25 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 
 <!-- Bottom Nav -->
 <nav class="tab-bar">
-  <button class="tab active" onclick="switchTab('tasks',this)">
+  <button class="tab active" data-tab="home" onclick="switchTab('home',this)">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 9.5L10 3l7 6.5V17a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 18v-6h4v6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    Home
+  </button>
+  <button class="tab" data-tab="tasks" onclick="switchTab('tasks',this)">
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 6h12M4 10h8M4 14h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
     Tasks
   </button>
-  <button class="tab" onclick="switchTab('grades',this)">
+  <button class="tab" data-tab="grades" onclick="switchTab('grades',this)">
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="12" width="3" height="5" rx="1" fill="currentColor"/><rect x="8.5" y="8" width="3" height="9" rx="1" fill="currentColor"/><rect x="14" y="4" width="3" height="13" rx="1" fill="currentColor"/></svg>
     Grades
   </button>
-  <button class="tab" onclick="switchTab('focus',this)">
+  <button class="tab" data-tab="focus" onclick="switchTab('focus',this)">
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M10 7.5v4l2.5 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 2h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
     Focus
   </button>
-  <button class="tab" onclick="switchTab('deadlines',this)">
+  <button class="tab" data-tab="deadlines" onclick="switchTab('deadlines',this)">
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 8h14M7 2v3M13 2v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-    Deadlines
+    Dates
   </button>
 </nav>
 </div><!-- end app -->
@@ -539,6 +650,44 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
 <div class="sheet" id="sheet"><div id="sheet-content"></div></div>
 <div id="toast-container"></div>
+
+<!-- Settings -->
+<div class="settings-overlay" id="settings-overlay" onclick="closeSettings()"></div>
+<div class="settings-panel" id="settings-panel" onclick="event.stopPropagation()">
+  <div class="settings-top">
+    <div class="settings-title">Settings</div>
+    <button class="settings-close" onclick="closeSettings()">×</button>
+  </div>
+  <div class="settings-body">
+    <div class="settings-section-title">Profile</div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-row-label" id="sp-name">Not set</div>
+        <div class="settings-row-sub" id="sp-year"></div>
+      </div>
+      <button class="btn secondary sm" onclick="resetOnboarding()">Edit</button>
+    </div>
+    <div class="settings-section-title">Data</div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-row-label">Export data</div>
+        <div class="settings-row-sub">Download all data as JSON</div>
+      </div>
+      <button class="btn ghost sm" onclick="exportData()">Export</button>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-row-label">Clear all data</div>
+        <div class="settings-row-sub">Wipe and reset FlowDesk</div>
+      </div>
+      <button class="btn sm" style="background:var(--red);color:#fff;border-color:var(--red)" onclick="clearAllData()">Clear</button>
+    </div>
+    <div class="settings-about">
+      <strong>FlowDesk</strong><br>
+      Built with ❤️ and Claude Code
+    </div>
+  </div>
+</div>
 
 <!-- Onboarding Overlay -->
 <div id="onboard-overlay" class="onboard-overlay" style="display:none">
@@ -623,6 +772,8 @@ let activityDates=[];
 let weeklyData=null;
 let currentStreak=0, longestStreak=0;
 let obName='', obSelectedYear='', obCurrentStep=1;
+let focusSessionTask=null;
+let insightLoading=false;
 
 const GOAL_OPTIONS=[{l:'A',p:93},{l:'A−',p:90},{l:'B+',p:87},{l:'B',p:83},{l:'B−',p:80},{l:'C+',p:77},{l:'C',p:73}];
 const TYPE_COLORS={test:'var(--red)',quiz:'var(--amber)',project:'var(--purple)',hw:'var(--green)'};
@@ -652,8 +803,8 @@ function daysUntil(str){
 }
 
 // ---- Tab ----
-const TAB_ORDER=['tasks','grades','focus','deadlines'];
-let currentTab='tasks';
+const TAB_ORDER=['home','tasks','grades','focus','deadlines'];
+let currentTab='home';
 function switchTab(name,el){
   if(name===currentTab)return;
   const dir=TAB_ORDER.indexOf(name)>TAB_ORDER.indexOf(currentTab)?'right':'left';
@@ -663,7 +814,8 @@ function switchTab(name,el){
   const screen=document.getElementById('tab-'+name);
   screen.classList.add('active','slide-'+dir);
   el.classList.add('active');
-  if(name==='deadlines'){renderDateStrip();renderDeadlines()}
+  if(name==='home'){renderHome();loadDailyInsight();}
+  if(name==='deadlines'){renderDateStrip();renderDeadlines();}
 }
 
 // ---- Toast ----
@@ -1065,8 +1217,8 @@ function submitInlineGrade(classId,type){
   const catLabel=cat?cat.label:type.charAt(0).toUpperCase()+type.slice(1);
   const n=cls.entries.filter(e=>e.type===type).length+1;
   cls.entries.push({id:nextEntryId++,type,label:catLabel+(n>1?' '+n:''),score,total});
-  inlineGradeInput=null;renderGrades();saveState();renderWeeklyCard();
-  const pct=(score/total*100).toFixed(0);toast(labels[type]+' logged: '+pct+'%');
+  inlineGradeInput=null;renderGrades();saveState();renderWeeklyCard();renderGradeHealth();
+  const pct=(score/total*100).toFixed(0);toast(catLabel+' logged: '+pct+'%');
 }
 
 // ---- Focus ----
@@ -1392,8 +1544,9 @@ function obFinish(){
     gradeClasses.push(cls);
   }
   document.getElementById('onboard-overlay').style.display='none';
-  initWeeklyData();renderGreeting();renderStreakCard();renderWeeklyCard();renderGrades();saveState();
+  initWeeklyData();renderStreakCard();renderWeeklyCard();renderGrades();renderHome();saveState();
   if(profile.name)toast('Welcome to FlowDesk, '+profile.name+'!');
+  setTimeout(loadDailyInsight,1200);
 }
 function selectYear(year,el){
   obSelectedYear=year;
@@ -1521,6 +1674,142 @@ function renderWeeklyCard(){
   document.getElementById('wk-days').innerHTML=dayData.map(d=>`<div class="wk-day${d.isToday?' today':''}">${d.day}</div>`).join('');
 }
 
+// ---- Settings ----
+function openSettings(){
+  const ol=document.getElementById('settings-overlay');
+  const pn=document.getElementById('settings-panel');
+  if(!ol||!pn)return;
+  document.getElementById('sp-name').textContent=profile?.name||'Not set';
+  document.getElementById('sp-year').textContent=profile?.gradeYear||'';
+  ol.classList.add('open');pn.classList.add('open');
+}
+function closeSettings(){
+  document.getElementById('settings-overlay')?.classList.remove('open');
+  document.getElementById('settings-panel')?.classList.remove('open');
+}
+function clearAllData(){
+  if(!confirm('Clear all FlowDesk data? This cannot be undone.'))return;
+  localStorage.removeItem('flowdesk');localStorage.removeItem('flowdesk_insight');location.reload();
+}
+function exportData(){
+  const json=JSON.stringify({tasks,gradeClasses,deadlines,sessions,profile},null,2);
+  const a=document.createElement('a');
+  a.href='data:application/json;charset=utf-8,'+encodeURIComponent(json);
+  a.download='flowdesk-export.json';a.click();
+}
+function resetOnboarding(){
+  closeSettings();
+  if(profile){profile.onboarded=false;saveState();}
+  else showOnboarding();
+  location.reload();
+}
+
+// ---- Home Tab ----
+function getTopPriorityTask(){
+  const active=tasks.filter(t=>!t.done);
+  active.sort((a,b)=>(a.priority||99)-(b.priority||99));
+  return active[0]||null;
+}
+function startFocusOnTask(){
+  const top=getTopPriorityTask();
+  focusSessionTask=top?top.text:null;
+  const btn=document.querySelector('.tab[data-tab="focus"]');
+  if(btn)switchTab('focus',btn);
+}
+function renderHome(){
+  const today=todayStr();
+  const h=new Date().getHours();
+  const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  const grEl=document.getElementById('home-greeting');
+  if(grEl)grEl.textContent=g+(profile?.name?', '+profile.name:'');
+  const subEl=document.getElementById('home-subline');
+  if(subEl)subEl.textContent=profile?.gradeYear?profile.gradeYear:'Welcome to FlowDesk';
+  const top=getTopPriorityTask();
+  const ftEl=document.getElementById('hfc-task-text');
+  if(ftEl){
+    if(top)ftEl.innerHTML=esc(top.text);
+    else ftEl.innerHTML='<span class="hfc-empty">All caught up — no priority tasks</span>';
+  }
+  const sesEl=document.getElementById('hs-sessions');
+  if(sesEl)sesEl.textContent=sessions.filter(s=>s.date===today).length;
+  const stEl=document.getElementById('hs-streak');
+  if(stEl)stEl.textContent=currentStreak;
+  const wkEl=document.getElementById('hs-tasks');
+  if(wkEl)wkEl.textContent=weeklyData?.tasksCompleted||0;
+  renderGradeHealth();
+}
+function renderGradeHealth(){
+  const section=document.getElementById('grade-health-section');
+  const row=document.getElementById('grade-health-row');
+  if(!section||!row)return;
+  if(!gradeClasses.length){section.style.display='none';return;}
+  section.style.display='block';
+  row.innerHTML=gradeClasses.map(g=>{
+    const cur=computeClassGrade(g);
+    const pct=cur!==null?cur.toFixed(1)+'%':'—';
+    const color=cur!==null?gradeColor(cur):'#555';
+    const shortName=g.name.length>14?g.name.slice(0,13)+'…':g.name;
+    return`<div class="gh-chip"><div class="gh-dot" style="background:${color}"></div><span class="gh-name">${esc(shortName)}</span><span class="gh-pct" style="color:${color}">${pct}</span></div>`;
+  }).join('');
+}
+async function whatNextHome(){
+  const btn=document.getElementById('what-next-home-btn');
+  const box=document.getElementById('home-ai-box');
+  const textEl=document.getElementById('home-ai-text');
+  if(!box||!textEl)return;
+  if(btn)btn.classList.add('loading');
+  box.classList.add('visible');
+  textEl.innerHTML=AI_SKELETON;
+  const active=tasks.filter(t=>!t.done);
+  const upcoming=deadlines.filter(d=>!d.done).sort((a,b)=>a.due.localeCompare(b.due)).slice(0,6);
+  const gc=buildGradeContext();
+  try{
+    const parsed=await callClaude(
+      'You are a study coach for a high school student. Given their tasks, upcoming deadlines, and grades, tell them the ONE most important thing to work on right now. Be specific, direct, encouraging. Return ONLY valid JSON: {"task":"specific action under 15 words","reason":"1 sentence why this is the priority right now"}',
+      'Active tasks: '+active.slice(0,8).map(t=>t.text).join('; ')+'\n'+
+      'Upcoming: '+upcoming.map(d=>d.title+' ('+d.className+') due '+d.due+' ['+daysUntil(d.due)+'d]').join('; ')+'\n'+gc
+    );
+    textEl.innerHTML='<strong style="color:#fff;display:block;margin-bottom:6px">'+esc(parsed.task)+'</strong><span style="color:var(--text-dim)">'+esc(parsed.reason)+'</span>';
+  }catch(e){textEl.innerHTML='Error: '+esc(e.message);}
+  finally{if(btn)btn.classList.remove('loading');}
+}
+function loadDailyInsight(){
+  try{
+    const cache=JSON.parse(localStorage.getItem('flowdesk_insight')||'{}');
+    const card=document.getElementById('daily-insight-card');
+    const el=document.getElementById('daily-insight-text');
+    if(cache.date===todayStr()&&cache.text){
+      if(el)el.textContent=cache.text;
+      if(card)card.style.display='block';
+      return;
+    }
+    if(!insightLoading)generateDailyInsight();
+  }catch{}
+}
+async function generateDailyInsight(){
+  insightLoading=true;
+  try{
+    const h=new Date().getHours();
+    const tc=h<12?'morning':h<17?'afternoon':'evening';
+    const gc=buildGradeContext();
+    const up=deadlines.filter(d=>!d.done).sort((a,b)=>a.due.localeCompare(b.due)).slice(0,3);
+    const parsed=await callClaude(
+      'Generate ONE motivational/study insight sentence (max 20 words) for a student, specific to their situation. Return ONLY valid JSON: {"insight":"sentence here"}',
+      'Time: '+tc+'. '+(gc||'No grade data.')+
+      (up.length?'\nUpcoming: '+up.map(d=>d.title+' in '+daysUntil(d.due)+'d').join(', '):''),
+      200
+    );
+    if(parsed.insight){
+      localStorage.setItem('flowdesk_insight',JSON.stringify({date:todayStr(),text:parsed.insight}));
+      const card=document.getElementById('daily-insight-card');
+      const el=document.getElementById('daily-insight-text');
+      if(el)el.textContent=parsed.insight;
+      if(card)card.style.display='block';
+    }
+  }catch{}
+  finally{insightLoading=false;}
+}
+
 // ---- State ----
 function saveState(){
   try{localStorage.setItem('flowdesk',JSON.stringify({tasks,nextId,gradeClasses,nextGradeId,nextEntryId,deadlines,nextDeadlineId,sessions,notifEnabled,profile,activityDates,weeklyData}))}catch{}
@@ -1556,9 +1845,10 @@ function loadState(){
   computeStreakNums();
   renderTasks();renderGrades();renderSessions();renderDateStrip();renderDeadlines();
   updateTimerDisplay();updateNotifToggle();checkCrunch();
-  renderGreeting();renderStreakCard();renderWeeklyCard();
+  renderStreakCard();renderWeeklyCard();renderHome();
   if(notifEnabled)setTimeout(checkDeadlineNotifs,1000);
   if(!profile||!profile.onboarded)setTimeout(showOnboarding,500);
+  else setTimeout(loadDailyInsight,800);
 }
 
 loadState();
