@@ -207,6 +207,22 @@ input[type=text]{flex:1}
 .ig-ok:active{background:#158f68}
 .ig-cancel{background:none;border:.5px solid #242424;border-radius:8px;padding:10px 11px;font-size:14px;color:#444;cursor:pointer;font-family:var(--font);-webkit-tap-highlight-color:transparent}
 
+/* ---- CATEGORY INLINE EDITING ---- */
+.cat-mgr-header{display:flex;align-items:center;justify-content:space-between;padding-top:12px;margin-bottom:6px}
+.cat-mgr-title{font-size:9px;text-transform:uppercase;letter-spacing:.7px;font-weight:700;color:var(--text-muted)}
+.cat-wt-total{font-size:11px;font-weight:600;transition:color .2s}
+.cat-name-inp{flex:1;min-width:0;background:var(--surface);border:.5px solid #252530;border-radius:7px;padding:5px 8px;font-size:12px;color:var(--text);font-family:var(--font);outline:none;transition:border-color .15s}
+.cat-name-inp:focus{border-color:var(--purple)}
+.cat-wt-inp{width:40px;flex-shrink:0;background:var(--surface);border:.5px solid #252530;border-radius:7px;padding:5px 4px;font-size:12px;color:var(--text);font-family:var(--font);outline:none;text-align:center;transition:border-color .15s;-webkit-appearance:none;-moz-appearance:textfield}
+.cat-wt-inp:focus{border-color:var(--purple)}
+.cat-wt-inp::-webkit-outer-spin-button,.cat-wt-inp::-webkit-inner-spin-button{-webkit-appearance:none}
+.cat-mgr-pct{font-size:11px;color:var(--text-muted);flex-shrink:0}
+.cat-del-btn{background:none;border:none;color:#2a2a3a;cursor:pointer;font-size:15px;line-height:1;padding:0 3px;flex-shrink:0;transition:color .12s;font-family:var(--font)}
+.cat-del-btn:hover{color:var(--red)}
+.cat-add-btn{background:none;border:.5px dashed #252530;border-radius:7px;width:100%;padding:7px;font-size:11px;color:var(--text-muted);cursor:pointer;font-family:var(--font);transition:all .12s;text-align:center;margin-top:4px;display:block}
+.cat-add-btn:hover{border-color:var(--purple);color:var(--purple);background:#100F23}
+.cat-add-row{display:flex;align-items:center;gap:6px;margin-top:6px}
+
 /* ---- FOCUS ---- */
 .focus-stats-row{display:flex;align-items:center;background:var(--card);border:.5px solid var(--border);border-radius:var(--radius-md);padding:12px 0;margin-bottom:20px;box-shadow:var(--glow-sm)}
 .focus-stat-cell{flex:1;text-align:center}
@@ -540,6 +556,41 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 /* Splash update */
 .splash-mark{animation:splashPulse 2s ease infinite;background:#131030!important;border:.5px solid #2A2455!important;box-shadow:0 0 40px rgba(108,99,255,.22)!important}
 @keyframes splashPulse{0%,100%{box-shadow:0 0 40px rgba(108,99,255,.18)}50%{box-shadow:0 0 60px rgba(108,99,255,.38)}}
+
+/* ---- Desktop: iPhone frame centered on dark Mac desktop ---- */
+@media(min-width:768px){
+  body{
+    background:#030308;
+    background-image:radial-gradient(ellipse 900px 700px at 50% 50%,rgba(108,99,255,0.07) 0%,transparent 70%);
+    display:flex;align-items:center;justify-content:center;padding:24px;
+  }
+  #app{
+    width:430px;max-width:430px;
+    height:88dvh;max-height:860px;min-height:unset;
+    border-radius:44px;overflow:hidden;
+    position:relative;margin:0;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.07),
+      0 0 0 9px #111,
+      0 0 0 10.5px rgba(255,255,255,0.05),
+      0 48px 120px rgba(0,0,0,0.9),
+      0 0 80px rgba(108,99,255,0.08);
+  }
+  /* Tab bar sits at the bottom of the frame */
+  .tab-bar{position:absolute;bottom:0;left:0;transform:none;width:100%;max-width:100%;border-radius:0 0 44px 44px;padding-bottom:12px}
+  /* FAB inside frame */
+  .fab{position:absolute;bottom:calc(var(--nav-h) + 14px);right:16px}
+  /* Sheets, overlays, toasts — all scoped to the phone frame */
+  .sheet-overlay{position:absolute}
+  .sheet{position:absolute;max-width:100%;padding-bottom:20px}
+  .sheet.open{transform:translateX(-50%) translateY(0)}
+  .settings-overlay{position:absolute}
+  .settings-panel{position:absolute;top:0;right:0;width:min(310px,100%);height:100%;padding-bottom:20px}
+  .onboard-overlay{position:absolute}
+  .confetti-container{position:absolute;top:0;left:0;right:0}
+  #toast-container{position:absolute;bottom:calc(var(--nav-h) + 10px)}
+  .celebration-card{position:absolute;bottom:calc(var(--nav-h) + 10px);left:14px;right:14px}
+}
 </style>
 </head>
 <body>
@@ -877,35 +928,26 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
         <button class="btn ob-cta" style="margin-top:auto" onclick="obNext(2)">Continue →</button>
       </div>
     </div>
-    <!-- Step 3: First class + preset -->
+    <!-- Step 3: First class + custom categories -->
     <div class="onboard-step" id="ob-step3">
       <div class="ob-step-inner">
-        <div style="flex:1">
+        <div style="flex:1;overflow-y:auto">
           <div class="ob-title">Add your first class</div>
-          <div class="ob-sub">Choose the weight style that matches your class.</div>
+          <div class="ob-sub">Set how your teacher weights each category.</div>
           <div class="sh-field" style="margin-bottom:14px">
             <div class="sh-label">Class name</div>
             <input type="text" id="ob-cls1" placeholder="e.g. Algebra 2" class="ob-input">
           </div>
-          <div class="sh-label" style="margin-bottom:8px">Category preset</div>
-          <div class="ob-preset-grid" style="margin-bottom:16px">
-            <button class="ob-preset-btn active" onclick="selectPreset('Standard',this)">
-              <div class="ob-preset-name">Standard</div>
-              <div class="ob-preset-desc">Tests 40% · Quizzes 30% · Projects 20% · HW 10%</div>
-            </button>
-            <button class="ob-preset-btn" onclick="selectPreset('Science',this)">
-              <div class="ob-preset-name">Science</div>
-              <div class="ob-preset-desc">Labs 35% · Tests 35% · Quizzes 20% · HW 10%</div>
-            </button>
-            <button class="ob-preset-btn" onclick="selectPreset('English',this)">
-              <div class="ob-preset-name">English</div>
-              <div class="ob-preset-desc">Essays 40% · Projects 30% · Quizzes 20% · HW 10%</div>
-            </button>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div class="sh-label" style="margin-bottom:0">Categories & weights</div>
+            <span id="ob-wt-total" style="font-size:11px;font-weight:600;color:var(--green)">Total: 100% ✓</span>
           </div>
+          <div id="ob-cat-rows"></div>
+          <button class="add-grade-btn" style="width:100%;justify-content:center;margin:6px 0 14px" onclick="addObCatRow()">+ Add another category</button>
           <div style="display:flex;gap:8px">
             <div style="flex:1">
               <div class="sh-label" style="margin-bottom:6px">Current grade %</div>
-              <input type="number" id="ob-grade1" placeholder="88" min="0" max="100" class="ob-input">
+              <input type="number" id="ob-grade1" placeholder="88" min="0" max="100" class="ob-input" style="font-size:15px;padding:11px 12px">
             </div>
             <div style="flex:1">
               <div class="sh-label" style="margin-bottom:6px">Goal</div>
@@ -922,7 +964,7 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
         </div>
         <div style="margin-top:20px">
           <button class="btn ob-cta" onclick="obNext(3)">Continue →</button>
-          <button class="btn ghost ob-skip" onclick="obNext(3)">Skip for now</button>
+          <button class="btn ghost ob-skip" onclick="obGoTo(4)">Skip for now</button>
         </div>
       </div>
     </div>
@@ -980,17 +1022,18 @@ let notifEnabled=false;
 let sheetGoal=87, sheetType='test';
 let sheetCategories=[];
 let inlineGradeInput=null;
+let addCatOpenId=null;
 let profile=null;
 let activityDates=[];
 let weeklyData=null;
 let currentStreak=0, longestStreak=0;
-let obName='', obSelectedYear='', obCurrentStep=1, obCatPreset='Standard', obChallenge='';
+let obName='', obSelectedYear='', obCurrentStep=1, obChallenge='';
+let obCategories=[];
 let focusSessionTask=null;
 let insightLoading=false;
 let sheetTaskPriority=null;
 
 const GOAL_OPTIONS=[{l:'A',p:93},{l:'A−',p:90},{l:'B+',p:87},{l:'B',p:83},{l:'B−',p:80},{l:'C+',p:77},{l:'C',p:73}];
-const CAT_PRESETS={'Standard':[{key:'test',label:'Tests',weight:40},{key:'quiz',label:'Quizzes',weight:30},{key:'project',label:'Projects',weight:20},{key:'hw',label:'Homework',weight:10}],'Science':[{key:'lab',label:'Labs',weight:35},{key:'test',label:'Tests',weight:35},{key:'quiz',label:'Quizzes',weight:20},{key:'hw',label:'Homework',weight:10}],'English':[{key:'essay',label:'Essays',weight:40},{key:'project',label:'Projects',weight:30},{key:'quiz',label:'Reading Quizzes',weight:20},{key:'hw',label:'Homework',weight:10}]};
 const TYPE_COLORS={test:'var(--red)',quiz:'var(--amber)',project:'var(--purple)',hw:'var(--green)'};
 const TYPE_CLASSES={test:'type-test',quiz:'type-quiz',project:'type-project',hw:'type-hw'};
 
@@ -1420,16 +1463,13 @@ function saveNewClass(){
 }
 
 function openAddEntrySheet(classId){
-  sheetType='test';
   const cls=gradeClasses.find(g=>g.id===classId);if(!cls)return;
+  const cats=getCategories(cls);
+  sheetType=cats.length?cats[0].key:'test';
+  const typeButtons=cats.map((c,i)=>`<button class="type-btn${i===0?' active':''}" onclick="selectType('${esc(c.key)}',this)">${esc(c.label)}</button>`).join('');
   openSheet(`<div class="sheet-title">Add grade — ${esc(cls.name)}</div>
 <div class="sh-field"><div class="sh-label">Category</div>
-<div class="type-select" id="sh-type-btns">
-<button class="type-btn active" onclick="selectType('test',this)">Test</button>
-<button class="type-btn" onclick="selectType('quiz',this)">Quiz</button>
-<button class="type-btn" onclick="selectType('project',this)">Project</button>
-<button class="type-btn" onclick="selectType('hw',this)">Homework</button>
-</div></div>
+<div class="type-select" id="sh-type-btns">${typeButtons}</div></div>
 <div class="sh-field"><div class="sh-label">Assignment name (optional)</div>
 <input type="text" id="sh-entry-label" placeholder="e.g. Chapter 4 Test" style="width:100%"></div>
 <div class="sh-field"><div class="sh-label">Score</div>
@@ -1465,7 +1505,87 @@ function deleteClass(id){
   if(expandedClassId===id)expandedClassId=null;
   renderGrades();saveState();toast('Class removed');
 }
-function toggleExpand(id){expandedClassId=expandedClassId===id?null:id;renderGrades()}
+function toggleExpand(id){
+  expandedClassId=expandedClassId===id?null:id;
+  if(addCatOpenId&&expandedClassId!==addCatOpenId)addCatOpenId=null;
+  renderGrades();
+}
+
+// ---- Inline category management ----
+function refreshCatTotal(clsId){
+  const cls=gradeClasses.find(g=>g.id===clsId);if(!cls)return;
+  const cats=getCategories(cls);
+  const total=cats.reduce((s,c)=>s+(+c.weight||0),0);
+  const el=document.getElementById('cwt-'+clsId);if(!el)return;
+  el.style.color=total===100?'var(--green)':total>100?'var(--red)':'var(--amber)';
+  el.textContent=total===100?'Total: 100% ✓':total<100?'Total: '+total+'% — need '+(100-total)+'% more':'Total: '+total+'% (over by '+(total-100)+'%)';
+}
+function updateCatLabel(clsId,idx,val){
+  const cls=gradeClasses.find(g=>g.id===clsId);if(!cls)return;
+  const cats=getCategories(cls);if(cats[idx])cats[idx].label=val;
+  refreshCatTotal(clsId);
+}
+function updateCatWeight(clsId,idx,val){
+  const cls=gradeClasses.find(g=>g.id===clsId);if(!cls)return;
+  const cats=getCategories(cls);if(cats[idx])cats[idx].weight=parseFloat(val)||0;
+  refreshCatTotal(clsId);
+}
+function deleteCat(clsId,idx){
+  const cls=gradeClasses.find(g=>g.id===clsId);if(!cls)return;
+  const cats=getCategories(cls);
+  const cat=cats[idx];if(!cat)return;
+  if(cls.entries.some(e=>e.type===cat.key)){toast('Remove grades first');return;}
+  cats.splice(idx,1);cls.categories=[...cats];saveState();renderGrades();
+}
+function openAddCat(clsId){
+  addCatOpenId=clsId;renderGrades();
+  setTimeout(()=>{document.getElementById('new-cat-name-'+clsId)?.focus();},60);
+}
+function cancelAddCat(){addCatOpenId=null;renderGrades();}
+function confirmAddCat(clsId){
+  const cls=gradeClasses.find(g=>g.id===clsId);if(!cls)return;
+  const nameEl=document.getElementById('new-cat-name-'+clsId);
+  const wtEl=document.getElementById('new-cat-wt-'+clsId);
+  const name=(nameEl?.value||'').trim();
+  if(!name){nameEl?.focus();return;}
+  const wt=parseFloat(wtEl?.value)||0;
+  const cats=getCategories(cls);
+  const current=cats.reduce((s,c)=>s+(+c.weight||0),0);
+  if(current+wt>100){toast('Total would exceed 100%');wtEl?.focus();return;}
+  const key=name.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')||'cat'+Date.now();
+  cats.push({key,label:name,weight:wt});
+  cls.categories=[...cats];addCatOpenId=null;saveState();renderGrades();
+}
+
+// ---- Onboarding categories ----
+function initObCategories(){
+  obCategories=[{label:'Tests',weight:40},{label:'Quizzes',weight:30},{label:'Homework',weight:30}];
+  renderObCatRows();
+}
+function renderObCatRows(){
+  const el=document.getElementById('ob-cat-rows');if(!el)return;
+  el.innerHTML=obCategories.map((c,i)=>`<div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
+<input type="text" value="${esc(c.label)}" placeholder="e.g. Tests" style="flex:2;font-size:14px;padding:10px 11px;background:var(--card);border:.5px solid var(--border);border-radius:var(--radius-md);color:var(--text);font-family:var(--font);outline:none" oninput="obCategories[${i}].label=this.value">
+<input type="number" value="${c.weight||''}" placeholder="0" min="0" max="100" inputmode="decimal" style="width:52px;flex-shrink:0;font-size:14px;padding:10px 6px;text-align:center;background:var(--card);border:.5px solid var(--border);border-radius:var(--radius-md);color:var(--text);font-family:var(--font);outline:none;-webkit-appearance:none;-moz-appearance:textfield" oninput="obCategories[${i}].weight=parseFloat(this.value)||0;updateObCatTotal()">
+<span style="font-size:12px;color:var(--text-muted);flex-shrink:0">%</span>
+${obCategories.length>1?`<button onclick="deleteObCatRow(${i})" style="background:none;border:none;color:#444;cursor:pointer;font-size:18px;line-height:1;padding:0 3px;flex-shrink:0;font-family:var(--font)">×</button>`:'<div style="width:26px"></div>'}</div>`).join('');
+  updateObCatTotal();
+}
+function addObCatRow(){
+  obCategories.push({label:'',weight:0});
+  renderObCatRows();
+  setTimeout(()=>{const ins=document.querySelectorAll('#ob-cat-rows input[type=text]');if(ins.length)ins[ins.length-1].focus();},60);
+}
+function deleteObCatRow(i){
+  if(obCategories.length<=1)return;
+  obCategories.splice(i,1);renderObCatRows();
+}
+function updateObCatTotal(){
+  const total=obCategories.reduce((s,c)=>s+(+c.weight||0),0);
+  const el=document.getElementById('ob-wt-total');if(!el)return;
+  el.style.color=total===100?'var(--green)':total>100?'var(--red)':'var(--amber)';
+  el.textContent=total===100?'Total: 100% ✓':'Total: '+total+'%'+(total<100?' — need '+(100-total)+'% more':' — over by '+(total-100)+'%');
+}
 
 function renderGrades(){
   const list=document.getElementById('grade-list');
@@ -1512,12 +1632,16 @@ function renderGrades(){
     let entriesHtml='';
     if(expanded){
       const categories=getCategories(g);
-      entriesHtml=categories.map((cat,ci)=>{
+      const catTotal=categories.reduce((s,c)=>s+(+c.weight||0),0);
+      const totalColor=catTotal===100?'var(--green)':catTotal>100?'var(--red)':'var(--amber)';
+      const totalTxt=catTotal===100?'Total: 100% ✓':catTotal<100?'Total: '+catTotal+'% — need '+(100-catTotal)+'% more':'Total: '+catTotal+'% (over by '+(catTotal-100)+'%)';
+      const catSections=categories.map((cat,ci)=>{
         const type=cat.key;
         const catColor=CAT_COLORS[ci%CAT_COLORS.length];
         const entries=g.entries.filter(e=>e.type===type);
         const avg=entries.length?entries.reduce((s,e)=>s+e.score/e.total*100,0)/entries.length:null;
         const inputOpen=inlineGradeInput&&inlineGradeInput.classId===g.id&&inlineGradeInput.type===type;
+        const hasEntries=entries.length>0;
         const lines=entries.map(e=>{
           const epct=e.score/e.total*100;
           return`<div class="entry-line"><div class="cat-dot" style="background:${catColor}"></div><span class="entry-line-lbl">${esc(e.label)}</span><span class="entry-line-pct" style="color:${gradeColor(epct)}">${epct.toFixed(1)}%</span><span class="entry-line-raw">${e.score}/${e.total}</span><button class="entry-del" onclick="deleteEntry(${g.id},${e.id})">×</button></div>`;
@@ -1525,8 +1649,12 @@ function renderGrades(){
         const addSection=inputOpen
           ?`<div class="ig-row"><input type="number" id="ig-score-${g.id}-${type}" placeholder="Score" min="0" inputmode="decimal" onkeydown="if(event.key==='Enter')document.getElementById('ig-total-${g.id}-${type}').select()"><span class="ig-of">of</span><input type="number" id="ig-total-${g.id}-${type}" value="100" min="1" inputmode="decimal" onkeydown="if(event.key==='Enter')submitInlineGrade(${g.id},'${type}')"><button class="ig-ok" onclick="submitInlineGrade(${g.id},'${type}')">✓</button><button class="ig-cancel" onclick="cancelInlineGrade()">✗</button></div>`
           :`<button class="add-grade-btn" onclick="openInlineGrade(${g.id},'${type}')">+ Add</button>`;
-        return`<div class="cat-section"><div class="cat-head"><div class="cat-dot" style="background:${catColor}"></div><span class="cat-name">${esc(cat.label)}<span class="cat-wt">${cat.weight}%</span></span><span class="cat-avg" style="color:${avg!==null?gradeColor(avg):'#3a3a3a'}">${avg!==null?avg.toFixed(1)+'%':'—'}</span></div>${lines}${addSection}</div>`;
+        return`<div class="cat-section"><div class="cat-head"><div class="cat-dot" style="background:${catColor}"></div><input class="cat-name-inp" value="${esc(cat.label)}" oninput="updateCatLabel(${g.id},${ci},this.value)" onblur="saveState()"><input class="cat-wt-inp" type="number" value="${cat.weight}" min="0" max="100" inputmode="decimal" oninput="updateCatWeight(${g.id},${ci},this.value)" onblur="saveState()"><span class="cat-mgr-pct">%</span><span class="cat-avg" style="color:${avg!==null?gradeColor(avg):'#3a3a3a'}">${avg!==null?avg.toFixed(1)+'%':'—'}</span>${!hasEntries?`<button class="cat-del-btn" onclick="deleteCat(${g.id},${ci})">×</button>`:'<span style="width:22px;display:inline-block"></span>'}</div>${lines}${addSection}</div>`;
       }).join('');
+      const addCatSection=addCatOpenId===g.id
+        ?`<div class="cat-add-row"><input id="new-cat-name-${g.id}" class="cat-name-inp" placeholder="Category name" onkeydown="if(event.key==='Enter')document.getElementById('new-cat-wt-${g.id}').focus()"><input id="new-cat-wt-${g.id}" class="cat-wt-inp" type="number" placeholder="0" min="0" max="100" inputmode="decimal" onkeydown="if(event.key==='Enter')confirmAddCat(${g.id})"><span class="cat-mgr-pct">%</span><button class="ig-ok" style="padding:7px 12px;font-size:12px" onclick="confirmAddCat(${g.id})">✓</button><button class="ig-cancel" style="padding:7px 10px;font-size:12px" onclick="cancelAddCat()">✗</button></div>`
+        :`<button class="cat-add-btn" onclick="openAddCat(${g.id})">+ Add category</button>`;
+      entriesHtml=`<div class="cat-mgr-header"><span class="cat-mgr-title">Categories</span><span class="cat-wt-total" id="cwt-${g.id}" style="color:${totalColor}">${totalTxt}</span></div>${catSections}${addCatSection}`;
     }
 
     return`<div class="grade-card">
@@ -1995,6 +2123,7 @@ function obGoTo(step){
   const fill=document.getElementById('onboard-prog-fill');
   if(fill)fill.style.width=(step<=4?(step-1)/4*100:100)+'%';
   if(step===2)setTimeout(()=>{document.getElementById('ob-name')?.focus()},120);
+  if(step===3)setTimeout(()=>{if(!obCategories.length)initObCategories();else renderObCatRows();},80);
 }
 function obNext(step){
   if(step===1){obGoTo(2);return;}
@@ -2006,20 +2135,21 @@ function obNext(step){
   if(step===3){
     const n=document.getElementById('ob-cls1')?.value?.trim();
     if(n){
+      const total=obCategories.reduce((s,c)=>s+(+c.weight||0),0);
+      if(total!==100){toast('Category weights must add up to 100%');return;}
       const gv=parseFloat(document.getElementById('ob-grade1')?.value);
       const goal=parseInt(document.getElementById('ob-goal1')?.value)||87;
-      const cats=CAT_PRESETS[obCatPreset]||CAT_PRESETS['Standard'];
-      const cls={id:nextGradeId++,name:n,goal,categories:[...cats],entries:[]};
-      if(!isNaN(gv)&&gv>=0&&gv<=100)cls.entries.push({id:nextEntryId++,type:'test',label:'Starting grade',score:gv,total:100});
+      const categories=obCategories.filter(c=>c.label.trim()).map(c=>{
+        const key=c.label.trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')||'cat'+Date.now();
+        return{key,label:c.label.trim(),weight:+c.weight||0};
+      });
+      if(!categories.length){toast('Add at least one category');return;}
+      const cls={id:nextGradeId++,name:n,goal,categories,entries:[]};
+      if(!isNaN(gv)&&gv>=0&&gv<=100)cls.entries.push({id:nextEntryId++,type:categories[0].key,label:'Starting grade',score:gv,total:100});
       gradeClasses.push(cls);
     }
     obGoTo(4);return;
   }
-}
-function selectPreset(name,el){
-  obCatPreset=name;
-  document.querySelectorAll('.ob-preset-btn').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
 }
 function selectChallenge(c,el){
   obChallenge=c;
