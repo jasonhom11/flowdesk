@@ -7,7 +7,9 @@
       "Bash(git add *)",
       "Bash(git commit *)",
       "Bash(git config *)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(python3 -c \" import sys, json lines = sys.stdin.read\\(\\).strip\\(\\).split\\('\\\\n'\\) for line in lines: try: obj = json.loads\\(line\\) role = obj.get\\('role',''\\) content = obj.get\\('content',''\\) if isinstance\\(content, str\\) and len\\(content\\) > 50: print\\(f'[{role}]: {content[:300]}'\\) print\\('---'\\) elif isinstance\\(content, list\\): for block in content: if isinstance\\(block, dict\\) and block.get\\('type'\\) == 'text': print\\(f'[{role}]: {block[\\\\\"text\\\\\"][:300]}'\\) print\\('---'\\) except: pass \")",
+      "Bash(python3 -c ' *)"
     ]
   }
 }

@@ -9,7 +9,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="FlowDesk"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
 <link rel="apple-touch-icon" href="/icon.svg"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<style>@media(display-mode:standalone){body{user-select:none;-webkit-user-select:none}}</style>
 <style>
 :root{
   --purple:#7F77DD;--purple-dim:#534AB7;--green:#1D9E75;--amber:#EF9F27;--red:#E24B4A;
@@ -21,10 +24,10 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{height:100%}
 body{font-family:var(--font);background:var(--bg);min-height:100dvh;overscroll-behavior:none}
-#app{max-width:480px;margin:0 auto;min-height:100dvh;background:var(--surface);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+#app{max-width:540px;margin:0 auto;min-height:100dvh;background:var(--surface);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
 
 /* Nav */
-.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(10,10,10,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:.5px solid #1c1c1c;display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:540px;background:rgba(10,10,10,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:.5px solid #1c1c1c;display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
 .tab{flex:1;padding:10px 4px 8px;text-align:center;font-size:10px;color:var(--text-muted);cursor:pointer;background:none;border:none;font-family:var(--font);transition:color .15s;display:flex;flex-direction:column;align-items:center;gap:3px}
 .tab svg{transition:transform .12s;opacity:.7}
 .tab:active svg{transform:scale(.88)}
@@ -226,7 +229,7 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 /* Bottom sheet */
 .sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;opacity:0;pointer-events:none;transition:opacity .2s}
 .sheet-overlay.open{opacity:1;pointer-events:auto}
-.sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:480px;background:#161616;border-radius:16px 16px 0 0;z-index:400;padding:0 0 calc(env(safe-area-inset-bottom) + 20px);transition:transform .3s cubic-bezier(.32,.72,0,1);max-height:90dvh;overflow-y:auto}
+.sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:540px;background:#161616;border-radius:16px 16px 0 0;z-index:400;padding:0 0 calc(env(safe-area-inset-bottom) + 20px);transition:transform .3s cubic-bezier(.32,.72,0,1);max-height:90dvh;overflow-y:auto}
 .sheet.open{transform:translateX(-50%) translateY(0)}
 .sheet-handle{width:36px;height:4px;background:#333;border-radius:2px;margin:12px auto 16px}
 .sheet-body{padding:0 16px}
@@ -251,60 +254,8 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 .toast{background:#262626;color:var(--text);border:.5px solid #363636;border-radius:24px;padding:9px 18px;font-size:13px;font-family:var(--font);opacity:0;transform:translateY(8px) scale(.94);transition:all .22s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;pointer-events:none}
 .toast.show{opacity:1;transform:translateY(0) scale(1)}
 
-/* Layout toggle button */
-.layout-btn{background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:5px 10px 5px 7px;color:var(--text-muted);font-size:11px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:4px;font-family:var(--font);flex-shrink:0;transition:all .12s;white-space:nowrap}
-.layout-btn:active{transform:scale(.95)}
-.layout-btn svg{flex-shrink:0}
 
-/* Mac sidebar extras */
-.nav-logo{display:none;padding:4px 16px 20px;font-size:17px;font-weight:600;color:#fff;letter-spacing:-.3px;border-bottom:.5px solid #1c1c1c;margin-bottom:8px}
-.nav-logo span{color:var(--purple)}
-.nav-spacer{display:none;flex:1}
-.nav-footer{display:none;padding:12px}
-.nav-footer .layout-btn{width:100%;justify-content:center;border-radius:8px;padding:9px 14px}
 
-/* ===== MAC LAYOUT ===== */
-[data-layout="mac"]{max-width:960px;flex-direction:row;padding-top:0;height:100dvh;overflow:hidden}
-
-[data-layout="mac"] .tab-bar{
-  order:-1;
-  position:relative;transform:none;
-  width:196px;min-width:196px;flex-shrink:0;
-  flex-direction:column;align-items:stretch;
-  border-top:none;border-right:.5px solid #1c1c1c;
-  padding-top:24px;padding-bottom:env(safe-area-inset-bottom);
-  height:100%;align-self:stretch;
-  background:rgba(10,10,10,.98);
-  overflow-y:auto;
-}
-[data-layout="mac"] .tab{
-  flex-direction:row;justify-content:flex-start;
-  padding:10px 13px;border-radius:8px;
-  margin:1px 8px;font-size:13px;gap:10px;
-  width:calc(100% - 16px);text-align:left;
-}
-[data-layout="mac"] .tab.active{background:#16132a}
-[data-layout="mac"] .tab svg{flex-shrink:0}
-[data-layout="mac"] .screen-container{flex:1;min-width:0;padding-bottom:0;overflow-y:auto;height:100%}
-[data-layout="mac"] .screen{padding:28px 32px;max-width:720px;animation:none}
-[data-layout="mac"] .screen-header .layout-btn{display:none}
-[data-layout="mac"] .nav-logo{display:block}
-[data-layout="mac"] .nav-spacer{display:flex}
-[data-layout="mac"] .nav-footer{display:flex}
-
-/* Always-visible escape button in Mac mode */
-#mac-escape{display:none;position:fixed;bottom:calc(env(safe-area-inset-bottom) + 12px);right:12px;z-index:500;background:rgba(20,20,20,.95);border:.5px solid var(--border);border-radius:20px;padding:7px 12px 7px 9px;color:var(--text-muted);font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font);align-items:center;gap:5px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 2px 12px rgba(0,0,0,.4)}
-#mac-escape:active{transform:scale(.94)}
-[data-layout="mac"] #mac-escape{display:flex}
-
-/* Mac wider content tweaks */
-[data-layout="mac"] .stats-row{grid-template-columns:repeat(4,1fr)}
-[data-layout="mac"] .mode-pills{justify-content:flex-start}
-[data-layout="mac"] .timer-wrap{display:flex;align-items:center;gap:40px;padding:0 0 24px;text-align:left}
-[data-layout="mac"] .timer-circle{margin:0}
-[data-layout="mac"] .timer-btns{justify-content:flex-start}
-[data-layout="mac"] .session-stat{margin-bottom:0}
-[data-layout="mac"] .grade-summary{padding:16px 20px}
 
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
 
@@ -373,9 +324,66 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
 .wk-day-row{display:flex;gap:4px}
 .wk-day{flex:1;font-size:9px;color:#3a3a3a;text-align:center}
 .wk-day.today{color:var(--purple)}
+
+/* === PREMIUM POLISH === */
+
+/* Splash screen */
+#splash{position:fixed;inset:0;background:#0a0a0a;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;transition:opacity .45s ease,visibility .45s ease}
+#splash.out{opacity:0;visibility:hidden;pointer-events:none}
+.splash-mark{width:72px;height:72px;background:#131020;border:.5px solid #2a2260;border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;box-shadow:0 0 40px rgba(127,119,221,.18)}
+.splash-logo-text{font-size:28px;font-weight:700;color:#fff;letter-spacing:-.5px}
+.splash-logo-text span{color:var(--purple)}
+.splash-tagline{font-size:12px;color:#333;letter-spacing:.2px}
+@keyframes splashPulse{0%,100%{box-shadow:0 0 40px rgba(127,119,221,.18)}50%{box-shadow:0 0 60px rgba(127,119,221,.35)}}
+.splash-mark{animation:splashPulse 2s ease infinite}
+
+/* Tab slide transitions */
+@keyframes slideInRight{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:translateX(0)}}
+.screen.slide-right{animation:slideInRight .2s cubic-bezier(.22,.61,.36,1)}
+.screen.slide-left{animation:slideInLeft .2s cubic-bezier(.22,.61,.36,1)}
+
+/* Task check pop */
+@keyframes checkPop{0%{transform:scale(1)}35%{transform:scale(1.45)}70%{transform:scale(.92)}100%{transform:scale(1)}}
+.task-check.pop{animation:checkPop .38s cubic-bezier(.34,1.56,.64,1)}
+@keyframes taskFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.task-item.new-item{animation:taskFadeIn .22s ease}
+
+/* Grade card expand */
+.grade-card-body{animation:expandDown .18s ease}
+@keyframes expandDown{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+/* Button loading pulse */
+@keyframes btnPulse{0%,100%{opacity:1}50%{opacity:.5}}
+.btn.loading{animation:btnPulse 1.1s ease infinite;pointer-events:none;cursor:default}
+
+/* Skeleton shimmer */
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.sk{background:linear-gradient(90deg,#171717 25%,#222 50%,#171717 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px}
+.sk-card{height:68px;margin-bottom:8px;border-radius:10px}
+.sk-line{height:11px;margin-bottom:9px;border-radius:6px}
+.sk-line.w80{width:80%}.sk-line.w60{width:60%}.sk-line.w45{width:45%}
+.sk-block{padding:14px;background:#0d0d0d;border:.5px solid #1e1e1e;border-radius:10px;margin-bottom:8px}
+
+/* Polished empty states */
+.empty-state{text-align:center;padding:48px 20px 16px;display:flex;flex-direction:column;align-items:center}
+.es-icon{width:54px;height:54px;background:#131313;border:.5px solid #1e1e1e;border-radius:15px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.es-title{font-size:15px;font-weight:600;color:#2d2d2d;margin-bottom:6px}
+.es-sub{font-size:12px;color:#262626;line-height:1.65;max-width:200px}
 </style>
 </head>
 <body>
+<div id="splash">
+  <div class="splash-mark">
+    <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+      <path d="M8 10h14M8 18h10M8 26h12" stroke="#7F77DD" stroke-width="2.4" stroke-linecap="round"/>
+      <circle cx="28" cy="26" r="6" fill="none" stroke="#7F77DD" stroke-width="2.2"/>
+      <path d="M28 23.5v3l1.5 1.5" stroke="#7F77DD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <div class="splash-logo-text">Flow<span>Desk</span></div>
+  <div class="splash-tagline">Your student dashboard</div>
+</div>
 <div id="app">
 <h2 class="sr-only">FlowDesk</h2>
 <div class="screen-container">
@@ -389,7 +397,6 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <div class="header-sub" id="date-lbl"></div>
-      <button class="layout-btn" id="layout-btn-tasks" onclick="toggleLayout()"></button>
     </div>
   </div>
   <div id="streak-card" class="streak-card" style="display:none">
@@ -443,7 +450,6 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
     <div class="logo">Flow<span>Desk</span></div>
     <div style="display:flex;align-items:center;gap:8px">
       <div class="header-sub">Grades</div>
-      <button class="layout-btn" id="layout-btn-grades" onclick="toggleLayout()"></button>
     </div>
   </div>
   <div class="grade-summary">
@@ -457,12 +463,12 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
     <span>Your classes</span>
     <button class="btn sm" onclick="openAddClassSheet()">+ Add class</button>
   </div>
-  <div id="grade-list"><div class="empty-state"><span class="empty-icon">📊</span>Tap + Add class to get started</div></div>
+  <div id="grade-list"></div>
 </div>
 
 <!-- FOCUS -->
 <div id="tab-focus" class="screen">
-  <div class="screen-header"><div class="logo">Flow<span>Desk</span></div><div style="display:flex;align-items:center;gap:8px"><div class="header-sub">Focus</div><button class="layout-btn" id="layout-btn-focus" onclick="toggleLayout()"></button></div></div>
+  <div class="screen-header"><div class="logo">Flow<span>Desk</span></div><div style="display:flex;align-items:center;gap:8px"><div class="header-sub">Focus</div></div></div>
   <div class="mode-pills">
     <button class="mode-pill active" onclick="setMode(25,'Focus',this)">Focus 25m</button>
     <button class="mode-pill" onclick="setMode(5,'Break',this)">Break 5m</button>
@@ -484,12 +490,12 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
     <div class="session-stat">Sessions: <strong id="session-count">0</strong>&ensp;·&ensp;Focus time: <strong id="focus-time">0m</strong></div>
   </div>
   <div class="section-title">Session log</div>
-  <div id="session-log"><div class="empty-state"><span class="empty-icon">⏱</span>No sessions yet</div></div>
+  <div id="session-log"></div>
 </div>
 
 <!-- DEADLINES -->
 <div id="tab-deadlines" class="screen">
-  <div class="screen-header"><div class="logo">Flow<span>Desk</span></div><div style="display:flex;align-items:center;gap:8px"><div class="header-sub">Deadlines</div><button class="layout-btn" id="layout-btn-deadlines" onclick="toggleLayout()"></button></div></div>
+  <div class="screen-header"><div class="logo">Flow<span>Desk</span></div><div style="display:flex;align-items:center;gap:8px"><div class="header-sub">Deadlines</div></div></div>
   <div class="crunch-banner" id="crunch-banner">
     <div class="crunch-banner-title">Exam crunch</div>
     <div class="crunch-banner-text" id="crunch-text"></div>
@@ -503,14 +509,13 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
     <div class="section-title" style="margin-bottom:0">Upcoming</div>
     <button class="btn sm" onclick="openAddDeadlineSheet()">+ Add</button>
   </div>
-  <div id="deadline-list"><div class="empty-state"><span class="empty-icon">📅</span>No deadlines yet</div></div>
+  <div id="deadline-list"></div>
 </div>
 
 </div><!-- end screen-container -->
 
 <!-- Bottom Nav -->
 <nav class="tab-bar">
-  <div class="nav-logo">Flow<span>Desk</span></div>
   <button class="tab active" onclick="switchTab('tasks',this)">
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 6h12M4 10h8M4 14h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
     Tasks
@@ -527,12 +532,7 @@ svg.ring-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg)}
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 8h14M7 2v3M13 2v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
     Deadlines
   </button>
-  <div class="nav-spacer"></div>
-  <div class="nav-footer">
-    <button class="layout-btn" id="layout-btn-nav" onclick="toggleLayout()"></button>
-  </div>
 </nav>
-  <button id="mac-escape" onclick="toggleLayout()"></button>
 </div><!-- end app -->
 
 <!-- Sheet -->
@@ -616,6 +616,7 @@ let timerInterval=null, timerRunning=false, timerTotal=25*60, timerLeft=25*60, c
 let newTaskPriority=null;
 let notifEnabled=false;
 let sheetGoal=87, sheetType='test';
+let sheetCategories=[];
 let inlineGradeInput=null;
 let profile=null;
 let activityDates=[];
@@ -651,10 +652,16 @@ function daysUntil(str){
 }
 
 // ---- Tab ----
+const TAB_ORDER=['tasks','grades','focus','deadlines'];
+let currentTab='tasks';
 function switchTab(name,el){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  if(name===currentTab)return;
+  const dir=TAB_ORDER.indexOf(name)>TAB_ORDER.indexOf(currentTab)?'right':'left';
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active','slide-right','slide-left'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
+  currentTab=name;
+  const screen=document.getElementById('tab-'+name);
+  screen.classList.add('active','slide-'+dir);
   el.classList.add('active');
   if(name==='deadlines'){renderDateStrip();renderDeadlines()}
 }
@@ -724,12 +731,18 @@ document.getElementById('task-input').addEventListener('keydown',e=>{if(e.key===
 
 function toggleDone(id){
   const t=tasks.find(t=>t.id===id);if(!t)return;
+  const completing=!t.done;
   t.done=!t.done;renderTasks();
-  if(t.done){toast('Done ✓');if(navigator.vibrate)navigator.vibrate(40);recordActivity();recordWeeklyTask(1);}
-  else recordWeeklyTask(-1);
+  if(completing){
+    requestAnimationFrame(()=>{
+      const el=document.querySelector('[data-check-id="'+id+'"]');
+      if(el){el.classList.add('pop');el.addEventListener('animationend',()=>el.classList.remove('pop'),{once:true});}
+    });
+    toast('Done ✓');if(navigator.vibrate)navigator.vibrate(40);recordActivity();recordWeeklyTask(1);
+  }else{recordWeeklyTask(-1);tryRemoveStreakDay();}
   saveState();
 }
-function deleteTask(id){tasks=tasks.filter(t=>t.id!==id);renderTasks();saveState()}
+function deleteTask(id){tasks=tasks.filter(t=>t.id!==id);renderTasks();saveState();toast('Task removed');}
 function clearDone(){
   const n=tasks.filter(t=>t.done).length;if(!n)return;
   tasks=tasks.filter(t=>!t.done);renderTasks();saveState();toast('Cleared '+n+' task'+(n>1?'s':''));
@@ -749,12 +762,17 @@ function renderTasks(){
   let vis=tasks;
   if(filter==='active')vis=tasks.filter(t=>!t.done);
   if(filter==='done')vis=tasks.filter(t=>t.done);
-  if(!vis.length){list.innerHTML='<div class="empty-state"><span class="empty-icon">✓</span>'+(tasks.length?'Nothing here':'Add your first task above')+'</div>';return}
+  if(!vis.length){
+    if(filter==='done')list.innerHTML=`<div class="empty-state"><div class="es-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 11.5l5 5 9-9" stroke="#3a3a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="es-title">Nothing done yet</div><div class="es-sub">Complete tasks and they'll show up here.</div></div>`;
+    else if(filter==='active')list.innerHTML=`<div class="empty-state"><div class="es-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 11.5l5 5 9-9" stroke="#3a3a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="es-title">All done!</div><div class="es-sub">No active tasks. Nice work.</div></div>`;
+    else list.innerHTML=`<div class="empty-state"><div class="es-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="4" y="5" width="14" height="2" rx="1" fill="#2e2e2e"/><rect x="4" y="10" width="10" height="2" rx="1" fill="#2e2e2e"/><rect x="4" y="15" width="12" height="2" rx="1" fill="#2e2e2e"/></svg></div><div class="es-title">Nothing on your plate</div><div class="es-sub">Add a task above to get started.</div></div>`;
+    return;
+  }
   list.innerHTML=vis.map(t=>{
     const badge=t.priority===1?'<span class="priority-badge p1">High</span>':t.priority===2?'<span class="priority-badge p2">Med</span>':t.priority===3?'<span class="priority-badge p3">Low</span>':'';
     const bc=t.priority===1?' p1-item':t.priority===2?' p2-item':t.priority===3?' p3-item':'';
     return'<div class="task-item'+(t.done?' done':'')+bc+'">'+
-      '<div class="task-check '+(t.done?'checked':'')+'" onclick="toggleDone('+t.id+')"></div>'+
+      '<div class="task-check '+(t.done?'checked':'')+'" data-check-id="'+t.id+'" onclick="toggleDone('+t.id+')"></div>'+
       '<div class="task-text">'+esc(t.text)+'</div>'+badge+
       '<button class="delete-btn" onclick="deleteTask('+t.id+')">×</button></div>';
   }).join('');
@@ -770,6 +788,7 @@ async function callClaude(system,user,maxTokens=1200){
   const raw=data.content.find(b=>b.type==='text').text||'{}';
   return JSON.parse(raw.replace(/```json|```/g,'').trim());
 }
+const AI_SKELETON=`<div class="sk sk-line w80"></div><div class="sk sk-line w60"></div><div class="sk sk-line w45"></div>`;
 function showTaskAI(html){
   document.getElementById('task-ai-box').classList.add('visible');
   document.getElementById('task-ai-text').innerHTML=html;
@@ -778,7 +797,9 @@ function showTaskAI(html){
 async function prioritizeAI(){
   const active=tasks.filter(t=>!t.done);
   if(!active.length){toast('Add some tasks first!');return}
-  showTaskAI('<div class="loading-dots"><span></span><span></span><span></span></div>');
+  const btn=document.querySelector('[onclick="prioritizeAI()"]');
+  if(btn)btn.classList.add('loading');
+  showTaskAI(AI_SKELETON);
   const gc=buildGradeContext();
   try{
     const parsed=await callClaude(
@@ -787,12 +808,15 @@ async function prioritizeAI(){
     );
     parsed.priorities.forEach(p=>{if(active[p.id_index])active[p.id_index].priority=p.level});
     tasks.sort((a,b)=>{if(a.done!==b.done)return a.done?1:-1;return(a.priority||99)-(b.priority||99)});
-    renderTasks();showTaskAI(parsed.advice||'Tasks prioritized — start from the top.');saveState();
+    renderTasks();showTaskAI(parsed.advice||'Tasks prioritized — start from the top.');saveState();toast('Tasks sorted by AI');
   }catch(e){showTaskAI('Error: '+esc(e.message))}
+  finally{const btn=document.querySelector('[onclick="prioritizeAI()"]');if(btn)btn.classList.remove('loading');}
 }
 
 async function whatNext(){
-  showTaskAI('<div class="loading-dots"><span></span><span></span><span></span></div>');
+  const btn=document.getElementById('what-next-btn');
+  if(btn)btn.classList.add('loading');
+  showTaskAI(AI_SKELETON);
   const active=tasks.filter(t=>!t.done);
   const upcoming=deadlines.filter(d=>!d.done).sort((a,b)=>a.due.localeCompare(b.due)).slice(0,6);
   const gc=buildGradeContext();
@@ -804,6 +828,7 @@ async function whatNext(){
     );
     showTaskAI('<strong style="color:#fff;display:block;margin-bottom:6px">'+esc(parsed.task)+'</strong><span style="color:#888">'+esc(parsed.reason)+'</span>');
   }catch(e){showTaskAI('Error: '+esc(e.message))}
+  finally{const btn=document.getElementById('what-next-btn');if(btn)btn.classList.remove('loading');}
 }
 
 function buildGradeContext(){
@@ -821,50 +846,82 @@ function letterGrade(pct){
   if(pct>=80)return'B−';if(pct>=77)return'C+';if(pct>=73)return'C';if(pct>=70)return'C−';
   if(pct>=67)return'D+';if(pct>=60)return'D';return'F';
 }
+const DEFAULT_CATEGORIES=[{key:'test',label:'Tests',weight:40},{key:'quiz',label:'Quizzes',weight:30},{key:'project',label:'Projects',weight:20},{key:'hw',label:'Homework',weight:10}];
+const CAT_COLORS=['var(--red)','var(--amber)','var(--purple)','var(--green)','#4da6ff','#ff7eb9','#7dd3fc','#a3e635'];
+
+function getCategories(cls){
+  if(cls.categories&&cls.categories.length)return cls.categories;
+  if(cls.weights){const lbl={test:'Tests',quiz:'Quizzes',project:'Projects',hw:'Homework'};return Object.entries(cls.weights).map(([k,v])=>({key:k,label:lbl[k]||k,weight:v}));}
+  return DEFAULT_CATEGORIES;
+}
+
 function computeClassGrade(cls){
-  const w=cls.weights||{test:40,quiz:30,project:20,hw:10};
+  const categories=getCategories(cls);
   const cats={};
   (cls.entries||[]).forEach(e=>{if(!cats[e.type])cats[e.type]=[];cats[e.type].push(e.score/e.total*100)});
   let weighted=0,totalW=0;
-  for(const[type,scores]of Object.entries(cats)){
-    if(scores.length&&w[type]){
-      const avg=scores.reduce((s,v)=>s+v,0)/scores.length;
-      weighted+=avg*w[type];totalW+=w[type];
-    }
+  for(const cat of categories){
+    const scores=cats[cat.key];
+    if(scores?.length){const avg=scores.reduce((s,v)=>s+v,0)/scores.length;weighted+=avg*cat.weight;totalW+=cat.weight;}
   }
   return totalW?Math.round(weighted/totalW*10)/10:null;
 }
 
 function openAddClassSheet(){
   sheetGoal=87;
+  sheetCategories=[{key:'test',label:'Tests',weight:40},{key:'quiz',label:'Quizzes',weight:30},{key:'project',label:'Projects',weight:20},{key:'hw',label:'Homework',weight:10}];
   openSheet(`<div class="sheet-title">Add class</div>
 <div class="sh-field"><div class="sh-label">Class name</div>
 <input type="text" id="sh-name" placeholder="e.g. Algebra 2" style="width:100%"></div>
 <div class="sh-field"><div class="sh-label">Grade goal</div>
 <div class="goal-pills" id="sh-goal-pills">${GOAL_OPTIONS.map(g=>`<button class="goal-pill${g.p===87?' active':''}" onclick="selectGoal(${g.p},this)">${g.l}</button>`).join('')}</div></div>
-<div class="sh-field"><div class="sh-label">Category weights (%)</div>
-<div class="weights-grid">
-<div class="weight-field"><label>Tests</label><input type="number" id="sh-wt" value="40" min="0" max="100"></div>
-<div class="weight-field"><label>Quizzes</label><input type="number" id="sh-wq" value="30" min="0" max="100"></div>
-<div class="weight-field"><label>Projects</label><input type="number" id="sh-wp" value="20" min="0" max="100"></div>
-<div class="weight-field"><label>Homework</label><input type="number" id="sh-wh" value="10" min="0" max="100"></div>
-</div></div>
+<div class="sh-field">
+<div class="sh-label" style="display:flex;justify-content:space-between;align-items:center"><span>Categories & weights</span><span id="wt-total-lbl" style="font-size:11px;color:var(--green)">100%</span></div>
+<div id="sh-cat-rows"></div>
+<button class="add-grade-btn" style="margin-top:8px" onclick="addSheetCatRow()">+ Add category</button>
+</div>
 <button class="btn" style="width:100%;margin-top:6px" onclick="saveNewClass()">Add class</button>`);
+  renderSheetCatRows();
 }
 function selectGoal(p,el){
   sheetGoal=p;
   document.querySelectorAll('.goal-pill').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
 }
+function renderSheetCatRows(){
+  const el=document.getElementById('sh-cat-rows');if(!el)return;
+  const total=sheetCategories.reduce((s,c)=>s+(+c.weight||0),0);
+  const totalEl=document.getElementById('wt-total-lbl');
+  if(totalEl){totalEl.textContent=total+'%';totalEl.style.color=total===100?'var(--green)':'var(--amber)';}
+  el.innerHTML=sheetCategories.map((c,i)=>
+    `<div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
+<input type="text" value="${esc(c.label)}" placeholder="Category name" style="flex:2;font-size:13px;padding:9px 11px" oninput="sheetCategories[${i}].label=this.value">
+<input type="number" value="${c.weight}" min="0" max="100" style="width:54px;flex-shrink:0;font-size:13px;text-align:center;padding:9px 6px" oninput="sheetCategories[${i}].weight=parseFloat(this.value)||0;updateWtTotal()">
+<span style="font-size:12px;color:#555;flex-shrink:0">%</span>
+<button onclick="sheetCategories.splice(${i},1);renderSheetCatRows()" style="background:none;border:none;color:#555;cursor:pointer;font-size:18px;line-height:1;padding:0 4px;flex-shrink:0">×</button>
+</div>`
+  ).join('');
+}
+function addSheetCatRow(){
+  sheetCategories.push({key:'cat'+Date.now(),label:'',weight:0});
+  renderSheetCatRows();
+  setTimeout(()=>{const ins=document.querySelectorAll('#sh-cat-rows input[type=text]');if(ins.length)ins[ins.length-1].focus()},60);
+}
+function updateWtTotal(){
+  const total=sheetCategories.reduce((s,c)=>s+(+c.weight||0),0);
+  const el=document.getElementById('wt-total-lbl');
+  if(el){el.textContent=total+'%';el.style.color=total===100?'var(--green)':'var(--amber)';}
+}
 function saveNewClass(){
   const name=document.getElementById('sh-name').value.trim();if(!name)return;
-  const weights={
-    test:parseFloat(document.getElementById('sh-wt').value)||40,
-    quiz:parseFloat(document.getElementById('sh-wq').value)||30,
-    project:parseFloat(document.getElementById('sh-wp').value)||20,
-    hw:parseFloat(document.getElementById('sh-wh').value)||10
-  };
-  gradeClasses.push({id:nextGradeId++,name,goal:sheetGoal,weights,entries:[]});
+  const total=sheetCategories.reduce((s,c)=>s+(+c.weight||0),0);
+  if(total!==100){toast('Weights must add up to 100%');return;}
+  const categories=sheetCategories.filter(c=>c.label.trim()).map(c=>{
+    const key=c.label.trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')||'cat_'+Date.now();
+    return{key,label:c.label.trim(),weight:+c.weight||0};
+  });
+  if(!categories.length){toast('Add at least one category');return;}
+  gradeClasses.push({id:nextGradeId++,name,goal:sheetGoal,categories,entries:[]});
   closeSheet();renderGrades();saveState();toast(name+' added');
 }
 
@@ -920,7 +977,7 @@ function renderGrades(){
   const list=document.getElementById('grade-list');
   const avgEl=document.getElementById('avg-display');
   if(!gradeClasses.length){
-    list.innerHTML='<div class="empty-state"><span class="empty-icon">📊</span>Tap + Add class to get started</div>';
+    list.innerHTML=`<div class="empty-state"><div class="es-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="13" width="3" height="5" rx="1" fill="#2e2e2e"/><rect x="9" y="9" width="3" height="9" rx="1" fill="#2e2e2e"/><rect x="15" y="5" width="3" height="13" rx="1" fill="#2e2e2e"/></svg></div><div class="es-title">No classes yet</div><div class="es-sub">Tap + Add class to start tracking your grades.</div></div>`;
     avgEl.textContent='—';avgEl.style.color='#fff';
     document.getElementById('grades-sub').textContent='Across all classes';return;
   }
@@ -951,21 +1008,21 @@ function renderGrades(){
 
     let entriesHtml='';
     if(expanded){
-      const types=['test','quiz','project','hw'];
-      const typeLabels={test:'Tests',quiz:'Quizzes',project:'Projects',hw:'Homework'};
-      entriesHtml=types.map(type=>{
+      const categories=getCategories(g);
+      entriesHtml=categories.map((cat,ci)=>{
+        const type=cat.key;
+        const color=CAT_COLORS[ci%CAT_COLORS.length];
         const entries=g.entries.filter(e=>e.type===type);
         const avg=entries.length?entries.reduce((s,e)=>s+e.score/e.total*100,0)/entries.length:null;
-        const w=g.weights[type]||0;
         const inputOpen=inlineGradeInput&&inlineGradeInput.classId===g.id&&inlineGradeInput.type===type;
         const lines=entries.map(e=>{
           const epct=e.score/e.total*100;
-          return`<div class="entry-line"><div class="cat-dot" style="background:${TYPE_COLORS[type]}"></div><span class="entry-line-lbl">${esc(e.label)}</span><span class="entry-line-pct" style="color:${gradeColor(epct)}">${epct.toFixed(0)}%</span><span class="entry-line-raw">${e.score}/${e.total}</span><button class="entry-del" onclick="deleteEntry(${g.id},${e.id})">×</button></div>`;
+          return`<div class="entry-line"><div class="cat-dot" style="background:${color}"></div><span class="entry-line-lbl">${esc(e.label)}</span><span class="entry-line-pct" style="color:${gradeColor(epct)}">${epct.toFixed(1)}%</span><span class="entry-line-raw">${e.score}/${e.total}</span><button class="entry-del" onclick="deleteEntry(${g.id},${e.id})">×</button></div>`;
         }).join('');
         const addSection=inputOpen
           ?`<div class="ig-row"><input type="number" id="ig-score-${g.id}-${type}" placeholder="Score" min="0" inputmode="decimal" onkeydown="if(event.key==='Enter')document.getElementById('ig-total-${g.id}-${type}').select()"><span class="ig-of">of</span><input type="number" id="ig-total-${g.id}-${type}" value="100" min="1" inputmode="decimal" onkeydown="if(event.key==='Enter')submitInlineGrade(${g.id},'${type}')"><button class="ig-ok" onclick="submitInlineGrade(${g.id},'${type}')">✓</button><button class="ig-cancel" onclick="cancelInlineGrade()">✗</button></div>`
           :`<button class="add-grade-btn" onclick="openInlineGrade(${g.id},'${type}')">+ Add</button>`;
-        return`<div class="cat-section"><div class="cat-head"><div class="cat-dot" style="background:${TYPE_COLORS[type]}"></div><span class="cat-name">${typeLabels[type]}<span class="cat-wt">${w}%</span></span><span class="cat-avg" style="color:${avg!==null?gradeColor(avg):'#3a3a3a'}">${avg!==null?avg.toFixed(0)+'%':'—'}</span></div>${lines}${addSection}</div>`;
+        return`<div class="cat-section"><div class="cat-head"><div class="cat-dot" style="background:${color}"></div><span class="cat-name">${esc(cat.label)}<span class="cat-wt">${cat.weight}%</span></span><span class="cat-avg" style="color:${avg!==null?gradeColor(avg):'#3a3a3a'}">${avg!==null?avg.toFixed(1)+'%':'—'}</span></div>${lines}${addSection}</div>`;
       }).join('');
     }
 
@@ -1004,9 +1061,10 @@ function submitInlineGrade(classId,type){
   const total=parseFloat(tEl?.value)||100;
   if(isNaN(score)||score<0){sEl.focus();return;}
   const cls=gradeClasses.find(g=>g.id===classId);if(!cls)return;
-  const labels={test:'Test',quiz:'Quiz',project:'Project',hw:'Homework'};
+  const cat=(getCategories(cls)).find(c=>c.key===type);
+  const catLabel=cat?cat.label:type.charAt(0).toUpperCase()+type.slice(1);
   const n=cls.entries.filter(e=>e.type===type).length+1;
-  cls.entries.push({id:nextEntryId++,type,label:labels[type]+(n>1?' '+n:''),score,total});
+  cls.entries.push({id:nextEntryId++,type,label:catLabel+(n>1?' '+n:''),score,total});
   inlineGradeInput=null;renderGrades();saveState();renderWeeklyCard();
   const pct=(score/total*100).toFixed(0);toast(labels[type]+' logged: '+pct+'%');
 }
@@ -1030,7 +1088,7 @@ function toggleTimer(){
         playChime();if(navigator.vibrate)navigator.vibrate([150,80,150]);
         const mins=Math.round(timerTotal/60);
         if(currentMode==='Focus'){
-          sessions.unshift({label:mins+'m focus session',time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),mins});
+          sessions.unshift({label:mins+'m focus session',time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),mins,date:todayStr()});
           renderSessions();saveState();toast('Focus session done!');recordActivity();recordWeeklyFocus(mins);
         }else{toast('Break over — time to focus!')}
         timerLeft=timerTotal;updateTimerDisplay();
@@ -1054,7 +1112,7 @@ function renderSessions(){
   const tot=sessions.reduce((s,x)=>s+(x.mins||25),0);
   document.getElementById('focus-time').textContent=tot>=60?Math.floor(tot/60)+'h '+(tot%60)+'m':tot+'m';
   const el=document.getElementById('session-log');
-  if(!sessions.length){el.innerHTML='<div class="empty-state"><span class="empty-icon">⏱</span>No sessions yet</div>';return}
+  if(!sessions.length){el.innerHTML=`<div class="empty-state"><div class="es-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="12" r="7" stroke="#2e2e2e" stroke-width="1.8"/><path d="M11 8.5v4l2.5 2" stroke="#2e2e2e" stroke-width="1.8" stroke-linecap="round"/><path d="M9 3h4" stroke="#2e2e2e" stroke-width="1.8" stroke-linecap="round"/></svg></div><div class="es-title">No sessions yet</div><div class="es-sub">Start the timer to log your first focus session.</div></div>`;return}
   el.innerHTML=sessions.slice(0,8).map(s=>'<div class="session-item"><div class="session-dot"></div><span>'+esc(s.label)+'</span><span style="margin-left:auto;font-size:11px;color:#444">'+s.time+'</span></div>').join('');
 }
 
@@ -1115,7 +1173,7 @@ function renderDeadlines(){
   const el=document.getElementById('deadline-list');
   const upcoming=deadlines.filter(d=>!d.done&&daysUntil(d.due)>=-0).sort((a,b)=>a.due.localeCompare(b.due));
   const done=deadlines.filter(d=>d.done).slice(0,3);
-  if(!deadlines.length){el.innerHTML='<div class="empty-state"><span class="empty-icon">📅</span>No deadlines yet</div>';return}
+  if(!deadlines.length){el.innerHTML=`<div class="empty-state"><div class="es-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="4" width="16" height="15" rx="2" stroke="#2e2e2e" stroke-width="1.8"/><path d="M3 9h16M7 2v3M15 2v3" stroke="#2e2e2e" stroke-width="1.8" stroke-linecap="round"/></svg></div><div class="es-title">No deadlines yet</div><div class="es-sub">Add a deadline to track what's coming up.</div></div>`;return}
   const groups={};
   upcoming.forEach(d=>{if(!groups[d.due])groups[d.due]=[];groups[d.due].push(d)});
   let html=Object.entries(groups).map(([due,items])=>{
@@ -1182,20 +1240,22 @@ function checkDeadlineNotifs(){
 
 // ---- Score Calculator ----
 function scoreNeeded(cls, type) {
-  const w = cls.weights || {test:40,quiz:30,project:20,hw:10};
+  const categories = getCategories(cls);
+  const catEntry = categories.find(c=>c.key===type);
+  const catW = catEntry ? catEntry.weight : 0; if(!catW) return null;
   const cats = {};
   (cls.entries||[]).forEach(e => {
     if (!cats[e.type]) cats[e.type] = [];
     cats[e.type].push(e.score / e.total * 100);
   });
   let curWeighted = 0, curTotalW = 0;
-  for (const [t, scores] of Object.entries(cats)) {
-    if (scores.length && w[t]) {
+  for (const cat of categories) {
+    const scores = cats[cat.key];
+    if (scores?.length) {
       const avg = scores.reduce((s,v) => s+v, 0) / scores.length;
-      curWeighted += avg * w[t]; curTotalW += w[t];
+      curWeighted += avg * cat.weight; curTotalW += cat.weight;
     }
   }
-  const catW = w[type] || 0; if (!catW) return null;
   const entries = cats[type] || [];
   const N = entries.length;
   const A = N ? entries.reduce((s,v) => s+v, 0) / N : 0;
@@ -1210,9 +1270,8 @@ function scoreNeeded(cls, type) {
 }
 
 function buildScoreCalc(cls) {
-  const types = ['test','quiz','project','hw'];
-  const labels = {test:'Test',quiz:'Quiz',project:'Project',hw:'Homework'};
-  const options = types.map(t => `<option value="${t}">${labels[t]}</option>`).join('');
+  const categories = getCategories(cls);
+  const options = categories.map(c => `<option value="${esc(c.key)}">${esc(c.label)}</option>`).join('');
   return `<div class="score-calc">
 <div class="score-calc-title">What score do I need?</div>
 <div class="score-calc-row">
@@ -1228,19 +1287,27 @@ function updateScoreCalc(classId) {
   const type = document.getElementById('calc-type-'+classId).value;
   const el = document.getElementById('calc-result-'+classId);
   const cur = computeClassGrade(cls);
-  if (cur !== null && cur >= cls.goal) {
-    el.innerHTML = `<strong style="color:var(--green)">${cur.toFixed(1)}%</strong>You've already met your ${cls.goal}% goal!`;
-    return;
-  }
   const needed = scoreNeeded(cls, type);
   if (needed === null) { el.textContent = 'No weight set for this category.'; return; }
+  const categories = getCategories(cls);
+  const catLabel = (categories.find(c=>c.key===type)||{label:type}).label;
+  if (cur !== null && cur >= cls.goal) {
+    if (needed <= 0) {
+      el.innerHTML = `<strong style="color:var(--green)">Any score works!</strong><span style="color:#888"> You're well above your ${cls.goal}% goal.</span>`;
+    } else if (needed > 100) {
+      el.innerHTML = `<strong style="color:var(--amber)">Score as high as possible</strong><span style="color:#888"> to maintain your ${cls.goal}% goal after this ${catLabel} entry.</span>`;
+    } else {
+      el.innerHTML = `<strong style="color:var(--green)">${needed.toFixed(0)}%</strong><span style="color:#888"> You can score as low as ${needed.toFixed(0)}% and still maintain your ${cls.goal}% goal.</span>`;
+    }
+    return;
+  }
   if (needed > 100) {
-    el.innerHTML = `<strong style="color:var(--red)">Not achievable in one ${type}</strong>You'd need ${needed.toFixed(0)}% — consider multiple high scores or extra credit.`;
+    el.innerHTML = `<strong style="color:var(--red)">Not achievable in one entry</strong>You'd need ${needed.toFixed(0)}% — consider multiple high scores or extra credit.`;
   } else if (needed <= 0) {
     el.innerHTML = `<strong style="color:var(--green)">Any score works!</strong>You've already covered this category's contribution to your goal.`;
   } else {
     const color = needed >= 90 ? 'var(--red)' : needed >= 80 ? 'var(--amber)' : 'var(--green)';
-    el.innerHTML = `<strong style="color:${color}">${needed.toFixed(0)}%</strong>needed on your next ${type} to reach ${cls.goal}% in ${esc(cls.name)}.`;
+    el.innerHTML = `<strong style="color:${color}">${needed.toFixed(0)}%</strong>needed on your next ${catLabel} entry to reach ${cls.goal}% in ${esc(cls.name)}.`;
   }
 }
 
@@ -1260,7 +1327,8 @@ async function generatePrep(deadlineId) {
   const topics = document.getElementById('sh-prep-topics').value.trim();
   const btn = document.querySelector('#sheet-content .btn');
   btn.textContent = 'Generating...'; btn.disabled = true;
-  document.getElementById('prep-output').innerHTML = '<div style="padding:16px 0;text-align:center"><div class="loading-dots"><span></span><span></span><span></span></div></div>';
+  const PREP_SK=[...Array(4)].map(()=>`<div class="sk-block"><div class="sk sk-line w80" style="margin-bottom:10px"></div><div class="sk sk-line w60"></div></div>`).join('');
+  document.getElementById('prep-output').innerHTML = '<div style="padding-top:14px">'+PREP_SK+'</div>';
   try {
     const parsed = await callClaude(
       'You are a study coach for a high school freshman. Generate 6 practice questions for an upcoming '+d.type+'. Questions should be clear and match the difficulty of a real high school '+d.type+'. For each question provide a concise answer/explanation. Also list 3-4 key topics to review. Return ONLY valid JSON: {"questions":[{"q":"question text","a":"answer/explanation"}],"topics":["topic1","topic2"]}',
@@ -1280,7 +1348,7 @@ async function generatePrep(deadlineId) {
       html += `<div class="prep-topics"><div class="prep-topics-title">Key topics to review</div>${parsed.topics.map(t=>'<span class="topic-chip">'+esc(t)+'</span>').join('')}</div>`;
     }
     document.getElementById('prep-output').innerHTML = '<div style="padding-top:16px">'+html+'</div>';
-    btn.textContent = 'Regenerate'; btn.disabled = false;
+    btn.textContent = 'Regenerate'; btn.disabled = false; toast('Practice questions ready!');
   } catch(e) {
     document.getElementById('prep-output').innerHTML = '<div style="color:var(--red);font-size:13px;padding-top:12px">Error: '+esc(e.message)+'</div>';
     btn.textContent = 'Try again'; btn.disabled = false;
@@ -1319,7 +1387,7 @@ function obFinish(){
   if(n){
     const gv=parseFloat(document.getElementById('ob-grade1')?.value);
     const goal=parseInt(document.getElementById('ob-goal1')?.value)||87;
-    const cls={id:nextGradeId++,name:n,goal,weights:{test:40,quiz:30,project:20,hw:10},entries:[]};
+    const cls={id:nextGradeId++,name:n,goal,categories:[...DEFAULT_CATEGORIES],entries:[]};
     if(!isNaN(gv)&&gv>=0&&gv<=100)cls.entries.push({id:nextEntryId++,type:'test',label:'Starting grade',score:gv,total:100});
     gradeClasses.push(cls);
   }
@@ -1338,6 +1406,16 @@ function recordActivity(){
   const today=todayStr();
   if(!activityDates.includes(today)){activityDates.push(today);activityDates.sort();}
   computeStreakNums();renderStreakCard();
+}
+function tryRemoveStreakDay(){
+  const today=todayStr();
+  if(!activityDates.includes(today))return;
+  const anyDoneTask=tasks.some(t=>t.done);
+  const sessionToday=sessions.some(s=>s.date===today);
+  if(!anyDoneTask&&!sessionToday){
+    activityDates=activityDates.filter(d=>d!==today);
+    computeStreakNums();renderStreakCard();saveState();
+  }
 }
 function computeStreakNums(){
   if(!activityDates.length){currentStreak=0;longestStreak=0;return}
@@ -1458,11 +1536,15 @@ function loadState(){
       nextDeadlineId=s.nextDeadlineId||1;
       deadlines=s.deadlines||[];
       nextGradeId=s.nextGradeId||1;nextEntryId=s.nextEntryId||1;
-      // Migrate old grade format {name,pct} → new format
+      // Migrate old grade formats
       gradeClasses=(s.gradeClasses||[]).map(g=>{
         if(!g.entries){
-          return{id:nextGradeId++,name:g.name,goal:87,weights:{test:40,quiz:30,project:20,hw:10},
+          return{id:nextGradeId++,name:g.name,goal:87,categories:[...DEFAULT_CATEGORIES],
             entries:g.pct!==undefined?[{id:nextEntryId++,type:'test',label:'Previous grade',score:g.pct,total:100}]:[]};
+        }
+        if(!g.categories){
+          const lbl={test:'Tests',quiz:'Quizzes',project:'Projects',hw:'Homework'};
+          g.categories=Object.entries(g.weights||{test:40,quiz:30,project:20,hw:10}).map(([k,v])=>({key:k,label:lbl[k]||k,weight:v}));
         }
         return g;
       });
@@ -1482,32 +1564,13 @@ function loadState(){
 loadState();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js');
 
-// ---- Layout ----
-const MAC_SVG = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1.5" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 12.5h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4.5 9.5v3M9.5 9.5v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`;
-const PHONE_SVG = `<svg width="11" height="14" viewBox="0 0 11 14" fill="none"><rect x=".7" y=".7" width="9.6" height="12.6" rx="2.3" stroke="currentColor" stroke-width="1.4"/><circle cx="5.5" cy="11.2" r=".8" fill="currentColor"/><path d="M3.5 2.5h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`;
-
-function setLayout(mode) {
-  const app = document.getElementById('app');
-  app.dataset.layout = mode;
-  localStorage.setItem('fd-layout', mode);
-  const isMac = mode === 'mac';
-  const html = isMac ? PHONE_SVG + ' iPhone view' : MAC_SVG + ' Mac view';
-  document.querySelectorAll('.layout-btn').forEach(b => b.innerHTML = html);
-  document.getElementById('mac-escape').innerHTML = PHONE_SVG + ' iPhone view';
-}
-
-function toggleLayout() {
-  const isMac = document.getElementById('app').dataset.layout === 'mac';
-  localStorage.setItem('fd-layout-manual', '1');
-  setLayout(isMac ? 'phone' : 'mac');
-}
-
-setLayout(localStorage.getItem('fd-layout') || (window.innerWidth >= 768 ? 'mac' : 'phone'));
-window.addEventListener('resize', () => {
-  if (!localStorage.getItem('fd-layout-manual')) {
-    setLayout(window.innerWidth >= 768 ? 'mac' : 'phone');
-  }
-});
+// Splash screen
+(function(){
+  const s=document.getElementById('splash');if(!s)return;
+  const hide=()=>{s.classList.add('out');setTimeout(()=>s.remove(),500);};
+  if(document.readyState==='complete')setTimeout(hide,520);
+  else window.addEventListener('load',()=>setTimeout(hide,520));
+})();
 </script>
 </body>
 </html>
