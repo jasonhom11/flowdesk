@@ -1321,6 +1321,16 @@ async function callClaude(system,user,maxTokens=1200){
   return JSON.parse(raw.replace(/```json|```/g,'').trim());
 }
 const AI_SKELETON=`<div class="sk sk-line w80"></div><div class="sk sk-line w60"></div><div class="sk sk-line w45"></div>`;
+const AI_THINKING_MSGS=[
+  ()=>profile?.name?`Thinking about your grades, ${profile.name}…`:'Thinking about your grades…',
+  ()=>'Checking your classes and deadlines…',
+  ()=>profile?.name?`Analyzing ${profile.name}'s study situation…`:'Analyzing your study situation…',
+  ()=>'Looking at what matters most for you…'
+];
+function aiThinkingHTML(){
+  const msg=AI_THINKING_MSGS[Math.floor(Math.random()*AI_THINKING_MSGS.length)]();
+  return`<div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;font-style:italic">${msg}</div>${AI_SKELETON}`;
+}
 function showTaskAI(html){
   document.getElementById('task-ai-box').classList.add('visible');
   document.getElementById('task-ai-text').innerHTML=html;
@@ -1331,17 +1341,17 @@ async function prioritizeAI(){
   if(!active.length){toast('Add some tasks first!');return}
   const btn=document.querySelector('[onclick="prioritizeAI()"]');
   if(btn)btn.classList.add('loading');
-  showTaskAI(AI_SKELETON);
-  const gc=buildGradeContext();
+  showTaskAI(aiThinkingHTML());
+  const ctx=getUserContext();
   try{
     const parsed=await callClaude(
-      'You are FlowDesk AI for a high school student. Boost priority for tasks linked to classes below goal or with upcoming due dates. Return ONLY valid JSON: {"priorities":[{"id_index":0,"level":1}],"advice":"1-2 sentences"}. level:1=high,2=med,3=low.',
+      'You are FlowDesk AI, a personal study coach. You know this student\'s exact grades, classes, and deadlines.\nPrioritize their tasks by urgency: AT RISK classes first, then upcoming deadlines, then high-priority items.\nUse their actual class names in the advice — never generic. Be direct and specific.\nReturn ONLY valid JSON: {"priorities":[{"id_index":0,"level":1}],"advice":"1-2 sentences naming their actual classes or deadlines"}. level:1=high,2=med,3=low.',
       'Tasks:\n'+active.map((t,i)=>{
         const cls=gradeClasses.find(g=>g.id===t.classId);
         const due=t.dueDate?` [due ${t.dueDate}, ${daysUntil(t.dueDate)}d]`:'';
         const c=cls?` [${cls.name}]`:'';
         return(i+1)+'. '+t.text+c+due;
-      }).join('\n')+'\n'+gc
+      }).join('\n')+'\n\nStudent context:\n'+ctx
     );
     parsed.priorities.forEach(p=>{if(active[p.id_index])active[p.id_index].priority=p.level});
     tasks.sort((a,b)=>{if(a.done!==b.done)return a.done?1:-1;return(a.priority||99)-(b.priority||99)});
@@ -1353,27 +1363,52 @@ async function prioritizeAI(){
 async function whatNext(){
   const btn=document.getElementById('what-next-btn');
   if(btn)btn.classList.add('loading');
-  showTaskAI(AI_SKELETON);
+  showTaskAI(aiThinkingHTML());
   const active=tasks.filter(t=>!t.done);
-  const upcoming=deadlines.filter(d=>!d.done).sort((a,b)=>a.due.localeCompare(b.due)).slice(0,6);
-  const gc=buildGradeContext();
+  const ctx=getUserContext();
   try{
     const parsed=await callClaude(
-      'You are a study coach for a high school freshman. Given their tasks, upcoming deadlines, and grade goals, tell them the ONE most important thing to work on right now. Be specific, direct, encouraging. Return ONLY valid JSON: {"task":"specific action under 15 words","reason":"1 sentence why this is the priority right now"}',
-      'Active tasks: '+active.slice(0,8).map(t=>t.text).join('; ')+'\n'+
-      'Upcoming deadlines: '+upcoming.map(d=>d.title+' ('+d.className+') due '+d.due+' ['+daysUntil(d.due)+' days]').join('; ')+'\n'+gc
+      'You are FlowDesk AI — a personal study coach who knows this student\'s exact grades, upcoming deadlines, and habits.\nTell them the ONE most important thing to work on RIGHT NOW.\nBe hyper-specific: name their actual class, reference their actual grade or deadline. Never say "consider" — be direct.\nReturn ONLY valid JSON: {"task":"specific action under 15 words","reason":"1 sentence referencing their actual class name and grade or deadline"}',
+      'Active tasks: '+active.slice(0,8).map(t=>t.text).join('; ')+'\n\nStudent context:\n'+ctx
     );
-    showTaskAI('<strong style="color:#fff;display:block;margin-bottom:6px">'+esc(parsed.task)+'</strong><span style="color:#888">'+esc(parsed.reason)+'</span>');
+    showTaskAI('<strong style="color:#fff;display:block;margin-bottom:6px">'+esc(parsed.task)+'</strong><span style="color:var(--text-dim)">'+esc(parsed.reason)+'</span>');
   }catch(e){showTaskAI('Error: '+esc(e.message))}
   finally{const btn=document.getElementById('what-next-btn');if(btn)btn.classList.remove('loading');}
 }
 
-function buildGradeContext(){
-  if(!gradeClasses.length)return'';
-  return'\nGrade goals:\n'+gradeClasses.map(g=>{
-    const cur=computeClassGrade(g);
-    return g.name+': current '+(cur!==null?cur.toFixed(1)+'%':'no grades')+', goal '+g.goal+'% ('+letterGrade(g.goal)+'), gap '+(cur!==null?(g.goal-cur>0?'+'+(g.goal-cur).toFixed(1):'on track'):'unknown');
-  }).join('\n');
+function getUserContext(){
+  const today=todayStr();
+  const parts=[];
+  // Identity
+  const name=profile?.name;const year=profile?.gradeYear;const challenge=profile?.challenge;
+  parts.push('Student: '+(name||'unnamed')+(year?', '+year:'')+'.');
+  if(challenge)parts.push('Biggest challenge: '+challenge+'.');
+  // Classes + grades
+  if(gradeClasses.length){
+    parts.push('Classes:');
+    gradeClasses.forEach(g=>{
+      const cur=computeClassGrade(g);
+      if(cur===null){parts.push('  '+g.name+': no grades yet (goal '+g.goal+'% '+letterGrade(g.goal)+')');return;}
+      const gap=cur-g.goal;
+      const status=gap>=0?'on track (+'+gap.toFixed(1)+'%)':gap>=-5?'close to goal ('+gap.toFixed(1)+'%)':'AT RISK ('+Math.abs(gap).toFixed(1)+'% below goal)';
+      parts.push('  '+g.name+': '+cur.toFixed(1)+'% ('+letterGrade(cur)+'), goal '+g.goal+'% ('+letterGrade(g.goal)+'), '+status);
+    });
+  }
+  // Upcoming deadlines 7 days
+  const soon=deadlines.filter(d=>!d.done&&daysUntil(d.due)>=0&&daysUntil(d.due)<=7).sort((a,b)=>a.due.localeCompare(b.due));
+  if(soon.length){
+    parts.push('Upcoming deadlines (7 days):');
+    soon.forEach(d=>{const dys=daysUntil(d.due);parts.push('  '+d.title+(d.className?' ('+d.className+')':'')+' — '+(dys===0?'TODAY':'in '+dys+' day'+(dys!==1?'s':'')));});
+  }
+  // Due today + high priority tasks
+  const todayTasks=tasks.filter(t=>!t.done&&t.dueDate===today);
+  const highPri=tasks.filter(t=>!t.done&&t.priority===1&&t.dueDate!==today);
+  if(todayTasks.length)parts.push('Due today: '+todayTasks.map(t=>t.text).join(', ')+'.');
+  if(highPri.length)parts.push('High priority: '+highPri.slice(0,4).map(t=>t.text).join(', ')+'.');
+  // Streak + sessions
+  const todaySess=sessions.filter(s=>s.date===today).length;
+  parts.push('Streak: '+currentStreak+' day'+(currentStreak!==1?'s':'')+'. Focus sessions today: '+todaySess+'.');
+  return parts.join('\n');
 }
 
 // ---- Grades ----
@@ -2080,10 +2115,19 @@ async function generatePrep(deadlineId) {
   const btn = document.querySelector('#sheet-content .btn');
   btn.textContent = 'Generating...'; btn.disabled = true;
   const PREP_SK=[...Array(4)].map(()=>`<div class="sk-block"><div class="sk sk-line w80" style="margin-bottom:10px"></div><div class="sk sk-line w60"></div></div>`).join('');
-  document.getElementById('prep-output').innerHTML = '<div style="padding-top:14px">'+PREP_SK+'</div>';
+  const thinkMsg=AI_THINKING_MSGS[Math.floor(Math.random()*AI_THINKING_MSGS.length)]();
+  document.getElementById('prep-output').innerHTML = '<div style="padding-top:14px"><div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;font-style:italic">'+thinkMsg+'</div>'+PREP_SK+'</div>';
+  const gradeYear=profile?.gradeYear||'high school';
+  const cls=gradeClasses.find(g=>g.name.toLowerCase()===d.className?.toLowerCase());
+  const curGrade=cls?computeClassGrade(cls):null;
   try {
     const parsed = await callClaude(
-      'You are a study coach for a high school freshman. Generate 6 practice questions for an upcoming '+d.type+'. Questions should be clear and match the difficulty of a real high school '+d.type+'. For each question provide a concise answer/explanation. Also list 3-4 key topics to review. Return ONLY valid JSON: {"questions":[{"q":"question text","a":"answer/explanation"}],"topics":["topic1","topic2"]}',
+      'You are a study coach generating practice questions for a '+gradeYear+' student.\n'+
+      'Generate 6 authentic practice questions for their upcoming '+d.type+' in '+( d.className||'General')+'. '+
+      (curGrade!==null?'Their current grade in this class is '+curGrade.toFixed(1)+'% — calibrate difficulty to help them improve. ':'')+
+      'Match the exact difficulty and question style of a real '+gradeYear+' '+d.type+' — not generic textbook questions. '+
+      'For each question provide a concise but complete answer/explanation. Also list 3-4 key topics to review.\n'+
+      'Return ONLY valid JSON: {"questions":[{"q":"question text","a":"answer/explanation"}],"topics":["topic1","topic2"]}',
       'Class: '+(d.className||'General')+'\nAssignment: '+d.title+'\nTopics covered: '+(topics||'general '+d.className+' content'),
       1600
     );
@@ -2461,15 +2505,13 @@ async function whatNextHome(){
   if(!box||!textEl)return;
   if(btn)btn.classList.add('loading');
   box.classList.add('visible');
-  textEl.innerHTML=AI_SKELETON;
+  textEl.innerHTML=aiThinkingHTML();
   const active=tasks.filter(t=>!t.done);
-  const upcoming=deadlines.filter(d=>!d.done).sort((a,b)=>a.due.localeCompare(b.due)).slice(0,6);
-  const gc=buildGradeContext();
+  const ctx=getUserContext();
   try{
     const parsed=await callClaude(
-      'You are a study coach for a high school student. Given their tasks, upcoming deadlines, and grades, tell them the ONE most important thing to work on right now. Be specific, direct, encouraging. Return ONLY valid JSON: {"task":"specific action under 15 words","reason":"1 sentence why this is the priority right now"}',
-      'Active tasks: '+active.slice(0,8).map(t=>t.text).join('; ')+'\n'+
-      'Upcoming: '+upcoming.map(d=>d.title+' ('+d.className+') due '+d.due+' ['+daysUntil(d.due)+'d]').join('; ')+'\n'+gc
+      'You are FlowDesk AI — a personal study coach who knows this student\'s exact grades, upcoming deadlines, and daily habits.\nTell them the ONE most important thing to work on RIGHT NOW.\nBe hyper-specific: name their actual class, reference their actual grade or deadline. Never say "consider" or "try" — be direct and confident.\nReturn ONLY valid JSON: {"task":"specific action under 15 words","reason":"1 sentence referencing their actual class name and current grade or specific deadline"}',
+      'Active tasks: '+active.slice(0,8).map(t=>t.text).join('; ')+'\n\nStudent context:\n'+ctx
     );
     textEl.innerHTML='<strong style="color:#fff;display:block;margin-bottom:6px">'+esc(parsed.task)+'</strong><span style="color:var(--text-dim)">'+esc(parsed.reason)+'</span>';
   }catch(e){textEl.innerHTML='Error: '+esc(e.message);}
@@ -2491,15 +2533,14 @@ function loadDailyInsight(){
 async function generateDailyInsight(){
   insightLoading=true;
   try{
-    const h=new Date().getHours();
-    const tc=h<12?'morning':h<17?'afternoon':'evening';
-    const gc=buildGradeContext();
-    const up=deadlines.filter(d=>!d.done).sort((a,b)=>a.due.localeCompare(b.due)).slice(0,3);
+    const ctx=getUserContext();
     const parsed=await callClaude(
-      'Generate ONE motivational/study insight sentence (max 20 words) for a student, specific to their situation. Return ONLY valid JSON: {"insight":"sentence here"}',
-      'Time: '+tc+'. '+(gc||'No grade data.')+
-      (up.length?'\nUpcoming: '+up.map(d=>d.title+' in '+daysUntil(d.due)+'d').join(', '):''),
-      200
+      'You are FlowDesk AI generating a personalized daily insight for a student. You know their exact grades, deadlines, and streak.\n'+
+      'Generate ONE insight sentence (max 25 words). Vary the tone — sometimes motivating, sometimes a direct wake-up call, sometimes a specific study tip for their weakest class.\n'+
+      'Rules: Never be generic. If they have a test/quiz in 1-2 days, lead with that. If AT RISK in a class, call it out by name. If streak is strong, acknowledge it. If no grades yet, encourage them to start.\n'+
+      'Return ONLY valid JSON: {"insight":"personalized sentence here"}',
+      ctx,
+      300
     );
     if(parsed.insight){
       localStorage.setItem('flowdesk_insight',JSON.stringify({date:todayStr(),text:parsed.insight}));
